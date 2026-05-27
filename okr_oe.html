@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OKR Oé</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f5f3ef;--surface:#fff;--surface2:#f0ede8;--border:#e2ddd6;--border2:#ccc7bf;--text:#1a1814;--text2:#6b6560;--text3:#9e9890;--accent:#2d6a4f;--accent-light:#d8f3dc;--accent-text:#1b4332;--amber:#b5680f;--amber-light:#fef3c7;--red:#c0392b;--red-light:#fdecea;--radius:10px;--rsm:6px;--shadow:0 1px 3px rgba(0,0,0,.08)}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);font-size:14px;line-height:1.5;min-height:100vh}
+button{font-family:inherit;cursor:pointer;border:none;background:none}
+.app-wrap{max-width:1100px;margin:0 auto;padding:0 20px 60px}
+.topbar{position:sticky;top:0;z-index:100;background:rgba(245,243,239,.94);backdrop-filter:blur(8px);border-bottom:1px solid var(--border);padding:12px 20px;display:flex;align-items:center;gap:16px}
+.logo{font-size:18px;font-weight:600;color:var(--accent);letter-spacing:-.3px}
+.logo span{color:var(--text2);font-weight:300}
+.season-pill{font-size:12px;font-weight:500;background:var(--accent-light);color:var(--accent-text);padding:4px 12px;border-radius:20px}
+.spacer{flex:1}
+.filter-wrap{display:flex;align-items:center;gap:8px}
+.filter-label{font-size:12px;color:var(--text3)}
+.filter-select{font-family:inherit;font-size:12px;border:1px solid var(--border);background:var(--surface);color:var(--text);border-radius:var(--rsm);padding:5px 10px;outline:none;cursor:pointer}
+.filter-select:focus{border-color:var(--accent)}
+.btn-add-obj{font-size:12px;font-weight:500;background:var(--accent);color:#fff;padding:6px 14px;border-radius:var(--rsm);display:flex;align-items:center;gap:5px;transition:opacity .15s}
+.btn-add-obj:hover{opacity:.88}
+.stats-bar{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;padding:20px 0 16px}
+.stat-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px}
+.stat-label{font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px}
+.stat-val{font-size:22px;font-weight:600;color:var(--text);font-family:'DM Mono',monospace}
+.stat-sub{font-size:11px;color:var(--text2);margin-top:2px}
+.objectives-list{display:flex;flex-direction:column;gap:12px}
+.obj-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow)}
+.obj-header{display:flex;align-items:center;gap:10px;padding:14px 16px;cursor:pointer;user-select:none}
+.obj-header:hover{background:var(--surface2)}
+.obj-num{width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;flex-shrink:0}
+.obj-title{font-size:14px;font-weight:500;flex:1}
+.obj-meta{display:flex;align-items:center;gap:10px;flex-shrink:0}
+.owner-tag{font-size:11px;color:var(--text2);display:flex;align-items:center;gap:4px}
+.etp-badge{font-size:11px;background:var(--surface2);border:1px solid var(--border);padding:2px 8px;border-radius:20px;color:var(--text2)}
+.progress-wrap{display:flex;align-items:center;gap:8px}
+.progress-track{width:80px;height:5px;background:var(--border);border-radius:3px;overflow:hidden}
+.progress-fill{height:100%;border-radius:3px;transition:width .4s}
+.progress-pct{font-size:12px;font-weight:600;font-family:'DM Mono',monospace;min-width:36px;text-align:right}
+.chevron{font-size:12px;color:var(--text3);transition:transform .2s;margin-left:2px}
+.chevron.open{transform:rotate(180deg)}
+.sobj-list{border-top:1px solid var(--border)}
+.sobj-item{border-bottom:1px solid var(--border)}
+.sobj-item:last-child{border-bottom:none}
+.sobj-header{display:flex;align-items:center;gap:8px;padding:10px 16px 10px 28px;cursor:pointer;user-select:none}
+.sobj-header:hover{background:var(--surface2)}
+.sobj-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.sobj-title{font-size:13px;font-weight:500;flex:1}
+.sobj-meta{display:flex;align-items:center;gap:8px;flex-shrink:0}
+.weight-badge{font-size:10px;color:var(--text3);border:1px solid var(--border);padding:1px 7px;border-radius:20px;font-family:'DM Mono',monospace}
+.sobj-progress{display:flex;align-items:center;gap:6px}
+.sobj-track{width:60px;height:4px;background:var(--border);border-radius:3px;overflow:hidden}
+.sobj-fill{height:100%;border-radius:3px}
+.sobj-pct{font-size:11px;font-weight:600;font-family:'DM Mono',monospace;min-width:30px;text-align:right}
+.kr-section{background:var(--surface2)}
+.kr-table{width:100%;border-collapse:collapse}
+.kr-table th{font-size:10px;font-weight:500;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;padding:7px 10px;text-align:left;border-bottom:1px solid var(--border);white-space:nowrap;background:#eae7e1}
+.kr-table td{font-size:12px;padding:8px 10px;border-bottom:1px solid var(--border);vertical-align:middle}
+.kr-table tr:last-child td{border-bottom:none}
+.kr-table tbody tr:hover td{background:rgba(0,0,0,.02)}
+.kr-row-stop td{opacity:.5}
+.kr-name-cell{max-width:220px}
+.kr-name-text{font-size:12px;color:var(--text);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.stop-badge{display:inline-block;font-size:9px;font-weight:600;background:var(--red-light);color:var(--red);padding:1px 5px;border-radius:3px;margin-top:2px}
+.kr-id{font-size:10px;color:var(--text3);font-family:'DM Mono',monospace}
+.avatar{width:22px;height:22px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:8px;font-weight:600;flex-shrink:0}
+.avatar-sm{width:18px;height:18px;font-size:7px}
+.avatars-row{display:flex}
+.avatars-row .avatar{border:1.5px solid var(--surface);margin-left:-5px}
+.avatars-row .avatar:first-child{margin-left:0}
+.val-cell{font-family:'DM Mono',monospace;font-size:11px;white-space:nowrap}
+.val-start{color:var(--text3)}
+.val-current{font-weight:600;color:var(--text)}
+.val-revised-down{color:var(--amber);font-weight:600}
+.val-revised-up{color:var(--accent);font-weight:600}
+.val-revised-same{color:var(--text2)}
+.val-target{color:var(--text3)}
+.unit-tag{font-size:9px;color:var(--text3);background:var(--border);padding:1px 4px;border-radius:3px;margin-left:3px;vertical-align:middle}
+.bool-yes{display:inline-block;font-size:10px;font-weight:600;background:var(--accent-light);color:var(--accent-text);padding:1px 7px;border-radius:20px}
+.bool-no{display:inline-block;font-size:10px;color:var(--text3);background:var(--border);padding:1px 7px;border-radius:20px}
+.mini-prog{display:flex;align-items:center;gap:5px}
+.mini-track{width:50px;height:4px;background:var(--border);border-radius:3px;overflow:hidden}
+.mini-fill{height:100%;border-radius:3px}
+.mini-pct{font-size:11px;font-weight:600;font-family:'DM Mono',monospace;min-width:28px}
+.btn-edit{width:24px;height:24px;border-radius:5px;display:flex;align-items:center;justify-content:center;color:var(--text3);transition:all .15s}
+.btn-edit:hover{background:var(--border);color:var(--text)}
+.btn-edit svg{width:13px;height:13px}
+.add-kr-row td{padding:6px 10px}
+.btn-add-kr{font-size:11px;color:var(--text3);display:flex;align-items:center;gap:4px;padding:3px 8px;border-radius:5px;transition:all .15s}
+.btn-add-kr:hover{color:var(--accent);background:var(--accent-light)}
+.btn-add-sobj{font-size:11px;color:var(--text3);display:flex;align-items:center;gap:4px;padding:8px 28px;border-top:1px dashed var(--border);width:100%;text-align:left;transition:all .15s}
+.btn-add-sobj:hover{color:var(--accent);background:var(--accent-light)}
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:1000;align-items:center;justify-content:center}
+.modal-overlay.show{display:flex}
+.modal{background:var(--surface);border-radius:var(--radius);box-shadow:0 4px 20px rgba(0,0,0,.15);padding:24px;width:90%;max-width:520px;max-height:90vh;overflow-y:auto}
+.modal-title{font-size:16px;font-weight:600;margin-bottom:20px}
+.form-field{margin-bottom:16px}
+.form-label{font-size:12px;font-weight:500;color:var(--text2);margin-bottom:6px;display:block}
+.form-input{width:100%;font-family:inherit;font-size:13px;border:1px solid var(--border);border-radius:var(--rsm);padding:8px 10px;outline:none;background:var(--surface);color:var(--text);transition:border-color .15s}
+.form-input:focus{border-color:var(--accent)}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.form-row-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+.modal-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:24px}
+.btn-cancel{font-size:13px;color:var(--text2);padding:8px 16px;border-radius:var(--rsm);border:1px solid var(--border)}
+.btn-cancel:hover{background:var(--surface2)}
+.btn-save{font-size:13px;font-weight:500;background:var(--accent);color:#fff;padding:8px 20px;border-radius:var(--rsm)}
+.btn-save:hover{opacity:.88}
+.btn-danger{font-size:13px;font-weight:500;background:var(--red-light);color:var(--red);padding:8px 16px;border-radius:var(--rsm);border:1px solid #fca5a5;margin-right:auto}
+.btn-danger:hover{background:#fee2e2}
+.checkbox-group{display:flex;flex-wrap:wrap;gap:6px}
+.checkbox-item{display:flex;align-items:center;gap:5px;font-size:12px;cursor:pointer}
+.checkbox-item input{cursor:pointer;accent-color:var(--accent)}
+.notice{font-size:11px;color:var(--text3);font-style:italic;margin-top:8px}
+.empty-state{padding:24px;text-align:center;color:var(--text3);font-size:13px}
+.saved-toast{position:fixed;bottom:20px;right:20px;background:var(--accent);color:#fff;font-size:12px;font-weight:500;padding:8px 16px;border-radius:20px;box-shadow:var(--shadow);opacity:0;transform:translateY(8px);transition:all .25s;pointer-events:none;z-index:200}
+.saved-toast.show{opacity:1;transform:translateY(0)}
+.c0{background:#dbeafe;color:#1e40af}.c1{background:#dcfce7;color:#166534}.c2{background:#fce7f3;color:#9d174d}
+.c3{background:#fef3c7;color:#92400e}.c4{background:#ede9fe;color:#5b21b6}.c5{background:#ffedd5;color:#9a3412}
+.c6{background:#e0f2fe;color:#075985}.c7{background:#f0fdf4;color:#14532d}.c8{background:#fdf4ff;color:#701a75}
+.c9{background:#fff7ed;color:#7c2d12}.c10{background:#ecfdf5;color:#064e3b}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <div class="logo">Oé <span>OKR</span></div>
+  <div class="season-pill" id="season-label">Printemps ☘️ 2026</div>
+  <div class="spacer"></div>
+  <div class="filter-wrap">
+    <span class="filter-label">Filtrer par</span>
+    <select class="filter-select" id="filter-person" onchange="applyFilter()">
+      <option value="">Toute l'équipe</option>
+    </select>
+  </div>
+  <button class="btn-add-obj" onclick="openObjModal()">+ Objectif</button>
+</div>
+<div class="app-wrap">
+  <div class="stats-bar" id="stats-bar"></div>
+  <div class="objectives-list" id="objectives-list"></div>
+</div>
+<div class="modal-overlay" id="modal-overlay" onclick="closeModal(event)">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-title" id="modal-title"></div>
+    <div id="modal-body"></div>
+    <div class="modal-actions">
+      <button class="btn-danger" id="btn-delete" style="display:none" onclick="deleteItem()">Supprimer</button>
+      <button class="btn-cancel" onclick="closeModal()">Annuler</button>
+      <button class="btn-save" onclick="saveModal()">Enregistrer</button>
+    </div>
+  </div>
+</div>
+<div class="saved-toast" id="saved-toast">✓ Sauvegardé</div>
+<script>
+const INITIAL_DATA={"season":"Printemps ☘️ 2026","people":["Christelle","Claire","Fiona","Fx","Guillemette","Julie","Juliette","Louis","Maxime","Thomas","Tomek"],"objectives":[{"id":"1","title":"Aller chercher du chiffre d'affaires sur d'autres canaux","etp":0.2,"owner":"Tomek","priorite":"P1","contributors":[]},{"id":"2","title":"Fiabiliser la production et monter d'un cran en supply","etp":0.1,"owner":"Fiona","priorite":"P1","contributors":[]},{"id":"3","title":"Adopter le loft et s'y sentir bien","etp":0.1,"owner":"Julie","priorite":"P2","contributors":[]},{"id":"4","title":"Se mettre en position sereine pour la pérénité d'Oé","etp":0.35,"owner":"Fx","priorite":"P1","contributors":[]},{"id":"5","title":"Gérer le domaine et la FSDO","etp":0.05,"owner":"Fx","priorite":"P2","contributors":[]},{"id":"6","title":"Prioriser les grands comptes RHF les plus ROIstes","etp":0.37,"owner":"Christelle","priorite":"P1","contributors":[]},{"id":"7","title":"Accélérer notre activité RETAIL en GMS","etp":0.22,"owner":"Christelle","priorite":"P1","contributors":[]},{"id":"8","title":"Aligner notre vision et piloter nos actions sales","etp":0.22,"owner":"Christelle","priorite":"P1","contributors":[]},{"id":"9","title":"Marketing : Déployer une stratégie de communication 360° cohérente et structurée au service de la croissance commerciale","etp":0.2,"owner":"Juliette","priorite":"P1","contributors":[]},{"id":"10","title":"Communauté : Structurer et activer une communauté engagée au service de l’impact positif et du développement de la marque et du B2B","etp":0.15,"owner":"Juliette","priorite":"P1","contributors":[]},{"id":"11","title":"Export : Réaliser des avancées significatives sur les principaux marchés cibles en priorisant le développement des distributeurs existants","etp":0.05,"owner":"Claire","priorite":"P1","contributors":[]}],"subobjectives":[{"id":"1.1","parent":"1","title":"Ouvrir le canal Commandes Groupées et lancer les premières commandes Groopay","poids":70.0,"owner":"Tomek","priorite":"P1","contributors":[]},{"id":"1.2","parent":"1","title":"Se mettre au carré sur les market places et les activer","poids":30.0,"owner":"Fiona","priorite":"P1","contributors":[]},{"id":"2.1","parent":"2","title":"Fiabiliser la production des essences","poids":30.0,"owner":"Fiona","priorite":"P1","contributors":[]},{"id":"2.2","parent":"2","title":"Fiabiliser les dates de réalisation de production chez MP","poids":30.0,"owner":"Fiona","priorite":"P2","contributors":[]},{"id":"2.3","parent":"2","title":"Avancer avec la coallition des acteurs du vin et ReZip","poids":20.0,"owner":"Julie","priorite":"P2","contributors":[]},{"id":"2.4","parent":"2","title":"Poursuivre et fortifier notre collaboration avec l'ESAT","poids":10.0,"owner":"Julie","priorite":"P2","contributors":[]},{"id":"2.5","parent":"2","title":"Nettoyer les stocks chez Peguet","poids":10.0,"owner":"Julie","priorite":"P2","contributors":[]},{"id":"3.1","parent":"3","title":"Les travaux au loft : en finir une fois pour toutes !","poids":100.0,"owner":"Julie","priorite":"P2","contributors":[]},{"id":"4.1","parent":"4","title":"Se donner les moyens de réaliser la marge objectif en 2026","poids":33.3,"owner":"Fx","priorite":"P1","contributors":[]},{"id":"4.2","parent":"4","title":"Avancer dans notre plan d'étalement de dettes","poids":33.3,"owner":"Fx","priorite":"P1","contributors":[]},{"id":"4.3","parent":"4","title":"Sécuriser Oé en termes de trésorerie sur 2026-2027","poids":33.3,"owner":"Fx","priorite":"P1","contributors":[]},{"id":"5.1","parent":"5","title":"Donner une nouvelle impulsion au plan de régénération du DOCSP","poids":60.0,"owner":"Fx","priorite":"P2","contributors":[]},{"id":"5.2","parent":"5","title":"Retrapper le juridique de la FSDO","poids":30.0,"owner":"Fx","priorite":"P2","contributors":[]},{"id":"5.3","parent":"5","title":"Organiser les vendanges au Domaine","poids":10.0,"owner":"Fx","priorite":"P3","contributors":[]},{"id":"6.1","parent":"6","title":"Accélérer Episaveurs – Développer pipeline et sécuriser volumes","poids":20.0,"owner":"Christelle","priorite":"P1","contributors":[]},{"id":"6.2","parent":"6","title":"Sécuriser France Boissons – Pérenniser accords et promotions","poids":15.0,"owner":"Claire","priorite":"P1","contributors":[]},{"id":"6.3","parent":"6","title":"Optimiser potentiel Maison Richard – Développer ventes et présence","poids":15.0,"owner":"Tomek","priorite":"P1","contributors":[]},{"id":"6.4","parent":"6","title":"Pérenniser Pain Quotidien – Consolider déploiement international","poids":10.0,"owner":"Claire","priorite":"P1","contributors":[]},{"id":"6.5","parent":"6","title":"Traiter Grands Comptes directs à potentiel","poids":10.0,"owner":"Christelle","priorite":"P1","contributors":[]},{"id":"6.6","parent":"6","title":"Cibler distributeurs régionaux existants – Sécuriser les volumes et réactiver terrain","poids":10.0,"owner":"Christelle","priorite":"P1","contributors":[]},{"id":"6.7","parent":"6","title":"Traiter top clients CHR directs – Fidéliser et étendre gamme premium","poids":10.0,"owner":"Christelle","priorite":"P2","contributors":[]},{"id":"6.8","parent":"6","title":"Nous déployer en Cash & Carry","poids":10.0,"owner":"Christelle","priorite":"P2","contributors":[]},{"id":"7.1","parent":"7","title":"Carrefour – Déployer et animer les magasins clés","poids":15.0,"owner":"Christelle","priorite":"P1","contributors":[]},{"id":"7.2","parent":"7","title":"ITM, U, Monoprix – Assurer couverture régionale et promotion","poids":15.0,"owner":"Christelle","priorite":"P1","contributors":[]},{"id":"7.3","parent":"7","title":"Leclerc & Franprix – Développer les magasins VIP","poids":10.0,"owner":"Christelle","priorite":"P3","contributors":[]},{"id":"7.4","parent":"7","title":"Enseignes prioritaires – visibilité & MEA","poids":5.0,"owner":"Christelle","priorite":"P1","contributors":[]},{"id":"7.5","parent":"7","title":"Renforcer la bascule Reuse / Réemploi","poids":10.0,"owner":"Christelle","priorite":"P1","contributors":[]},{"id":"7.6","parent":"7","title":"GSS – Sécuriser et développer positions","poids":15.0,"owner":"Christelle","priorite":"P1","contributors":[]},{"id":"7.7","parent":"7","title":"Cavistes - Pousser les acteurs majeurs","poids":15.0,"owner":"Christelle","priorite":"P1","contributors":[]},{"id":"7.8","parent":"7","title":"Hard Discount - Focuser sur le leader","poids":5.0,"owner":"Tomek","priorite":"P3","contributors":[]},{"id":"7.9","parent":"7","title":"Marketplaces - Optimiser les ventes et destockage","poids":10.0,"owner":"Christelle","priorite":"P1","contributors":[]},{"id":"8.1","parent":"8","title":"Stratégie & alignement – Suivi feuille de route par canal (Retail, RHF, GC RHF)","poids":20.0,"owner":"Christelle","priorite":"P1","contributors":[]},{"id":"8.2","parent":"8","title":"Stratégie terrain sales tous canaux - Repenser l'organisation (agents/alternants/CDIs/mutualisation)","poids":20.0,"owner":"Christelle","priorite":"P1","contributors":[]},{"id":"8.3","parent":"8","title":"Road map Trade Marketing - Aligner et anticiper les temps forts S2 2026-2027","poids":15.0,"owner":"Christelle","priorite":"P3","contributors":[]},{"id":"8.4","parent":"8","title":"Optimisation discours commercial","poids":15.0,"owner":"Christelle","priorite":"P1","contributors":[]},{"id":"8.5","parent":"8","title":"KPI & pilotage – Fiabiliser tableaux de bord internes et reporting Hubspot","poids":15.0,"owner":"Christelle","priorite":"P1","contributors":[]},{"id":"8.6","parent":"8","title":"Collaboration support – Suivi actions partagées avec équipes support","poids":15.0,"owner":"Christelle","priorite":"P1","contributors":[]},{"id":"9.1","parent":"9","title":"Renforcer la prospection et la fidélisation B2B grâce à des contenus, outils et communications ciblées","poids":20.0,"owner":"Juliette","priorite":"P1","contributors":[]},{"id":"9.2","parent":"9","title":"B2B organiser les salons et animations 2026/2027 : WineParis et ReUse","poids":5.0,"owner":"Guillemette","priorite":"P1","contributors":[]},{"id":"9.3","parent":"9","title":"Assurer le succès des lancements produits B2B grâce à un plan de communication et des PLV adaptées","poids":20.0,"owner":"Juliette","priorite":"P2","contributors":[]},{"id":"9.4","parent":"9","title":"Déployer le plan de communication Printemps/Été pour assurer visibilité, cohérence et suivi des actions Brand & B2C","poids":25.0,"owner":"Guillemette","priorite":"P1","contributors":[]},{"id":"9.5","parent":"9","title":"Repenser et améliorer le site Oé pour offrir une expérience utilisateur fluide et engageante","poids":25.0,"owner":"Guillemette","priorite":"P1","contributors":[]},{"id":"9.6","parent":"9","title":"Réaliser l’inventaire complet des supports de communication et marketing Oé","poids":5.0,"owner":"Guillemette","priorite":"P3","contributors":[]},{"id":"10.1","parent":"10","title":"Valider, structurer et lancer le Campus Oé comme outil d’engagement et de formation de la communauté B2B","poids":20.0,"owner":"Juliette","priorite":"P1","contributors":[]},{"id":"10.2","parent":"10","title":"Développer et activer la communauté Oé en augmentant le recrutement et l’engagement via des communications, un programme de parrainage et des expériences dédiées","poids":15.0,"owner":"Guillemette","priorite":"P2","contributors":[]},{"id":"10.3","parent":"10","title":"Déployer une communication régulière pour soutenir la visibilité et l’engagement du Commando Monop’","poids":25.0,"owner":"Guillemette","priorite":"P1","contributors":[]},{"id":"10.4","parent":"10","title":"Créer et activer des opportunités commerciales via les commandes groupées auprès de 50 entreprises","poids":40.0,"owner":"Guillemette","priorite":"P1","contributors":[]},{"id":"11.1","parent":"11","title":"US : reprendre le développement commercial tout en boostant l’activité avec nos distributeurs existants","poids":12.0,"owner":"Claire","priorite":"P2","contributors":[]},{"id":"11.2","parent":"11","title":"Allemagne: valider notre choix de distributeur","poids":12.0,"owner":"Claire","priorite":"P1","contributors":[]},{"id":"11.3","parent":"11","title":"UK : déployer Oé sur le marché","poids":12.0,"owner":"Claire","priorite":"P1","contributors":[]},{"id":"11.4","parent":"11","title":"Alimenter en nouveaux clients la zone DK/DE/BE/UK/NL pour consolider (ou trouver) notre distribueur","poids":14.0,"owner":"Claire","priorite":"P1","contributors":[]},{"id":"11.5","parent":"11","title":"Danemark: reprise des échanges en vue de confirmer un distributeur","poids":8.0,"owner":"Claire","priorite":"P1","contributors":[]},{"id":"11.6","parent":"11","title":"Marchés monopolistiques","poids":8.0,"owner":"Claire","priorite":"P1","contributors":[]},{"id":"11.7","parent":"11","title":"Support / passation congé maternité","poids":7.0,"owner":"Claire","priorite":"P2","contributors":[]},{"id":"11.8","parent":"11","title":"Autres marchés","poids":7.0,"owner":"Claire","priorite":"P2","contributors":[]},{"id":"11.9","parent":"11","title":"Belgique : assurer la croissance des sell-out Oé en vue d'obtenir une nouvelle commande distributeur","poids":10.0,"owner":"Claire","priorite":"P2","contributors":[]},{"id":"11.10","parent":"11","title":"Finlande: anticiper la suite","poids":10.0,"owner":"Claire","priorite":"P2","contributors":[]}],"keyresults":[{"id":"1.1.1","parent":"1.1","title":"Mettre à jour toutes les infos","poids":10.0,"owner":"Juliette","priorite":"","stop":false,"contributors":["Fiona"],"val_depart":0.0,"val_actuel":1.0,"val_revise":1.0,"val_cible":1.0,"unite":"%","taux":100,"taux_land":100},{"id":"1.1.2","parent":"1.1","title":"Nous poser en équipe et lister les cibles d'Ambassadeurs","poids":10.0,"owner":"Tomek","priorite":"","stop":false,"contributors":[],"val_depart":0.0,"val_actuel":1.0,"val_revise":1.0,"val_cible":1.0,"unite":"oui/non","taux":100.0,"taux_land":100.0},{"id":"1.1.3","parent":"1.1","title":"Définir le bon fonctionnement, argumentaire, visuels, guide Groopay simplifié","poids":10.0,"owner":"Tomek","priorite":"","stop":false,"contributors":["Guillemette"],"val_depart":0.0,"val_actuel":1.0,"val_revise":1.0,"val_cible":1.0,"unite":"%","taux":100,"taux_land":100},{"id":"1.1.4","parent":"1.1","title":"Valider ensemble le bon fontionnement commercial futur et l'équation économique liée","poids":10.0,"owner":"Tomek","priorite":"","stop":false,"contributors":["Fx"],"val_depart":0.0,"val_actuel":1.0,"val_revise":1.0,"val_cible":1.0,"unite":"oui/non","taux":100.0,"taux_land":100.0},{"id":"1.1.5","parent":"1.1","title":"Contacter 30 \"Ambassadeurs\"","poids":20.0,"owner":"Tomek","priorite":"STOP","stop":true,"contributors":["Guillemette"],"val_depart":0.0,"val_actuel":5.0,"val_revise":5.0,"val_cible":30.0,"unite":"nb","taux":16.7,"taux_land":16.7},{"id":"1.1.6","parent":"1.1","title":"Générer d'ici fin juin 3 commandes groupées minimum","poids":30.0,"owner":"Tomek","priorite":"","stop":false,"contributors":["Guillemette"],"val_depart":0.0,"val_actuel":1.0,"val_revise":3.0,"val_cible":3.0,"unite":"nb","taux":33.3,"taux_land":100},{"id":"1.1.7","parent":"1.1","title":"Formaliser un retour d'expérience structuré après les premières ventes pour préparer la saison suivante.","poids":10.0,"owner":"Tomek","priorite":"","stop":false,"contributors":["Fx"],"val_depart":0.0,"val_actuel":0.0,"val_revise":1.0,"val_cible":1.0,"unite":"oui/non","taux":0.0,"taux_land":100.0},{"id":"1.2.1","parent":"1.2","title":"Cartographier et prioriser les marketplaces","poids":20.0,"owner":"Fiona","priorite":"","stop":false,"contributors":[],"val_depart":0.0,"val_actuel":1.0,"val_revise":1.0,"val_cible":1.0,"unite":"%","taux":100,"taux_land":100},{"id":"1.2.2","parent":"1.2","title":"Analyse détaillée de 10 marketplaces (modèle économique, frais...)","poids":30.0,"owner":"Fiona","priorite":"","stop":false,"contributors":["Fx"],"val_depart":0.0,"val_actuel":3.0,"val_revise":10.0,"val_cible":10.0,"unite":"nb","taux":30.0,"taux_land":100},{"id":"1.2.3","parent":"1.2","title":"Réactiver ou lancer 5 marketplaces via un plan d'action","poids":30.0,"owner":"Fiona","priorite":"","stop":false,"contributors":["Fx"],"val_depart":0.0,"val_actuel":2.0,"val_revise":5.0,"val_cible":5.0,"unite":"nb","taux":40.0,"taux_land":100},{"id":"1.2.4","parent":"1.2","title":"Générer 5k € de chiffre d’affaires via les marketplaces activées","poids":20.0,"owner":"Fiona","priorite":"","stop":false,"contributors":["Julie"],"val_depart":0.0,"val_actuel":5000.0,"val_revise":5000.0,"val_cible":5000.0,"unite":"€","taux":100,"taux_land":100},{"id":"2.1.1","parent":"2.1","title":"S'assurer que la prod chez JDLO se passe bien","poids":30.0,"owner":"Fiona","priorite":"","stop":false,"contributors":[],"val_depart":0.0,"val_actuel":1.0,"val_revise":1.0,"val_cible":1.0,"unite":"oui/non","taux":100.0,"taux_land":100.0},{"id":"2.1.2","parent":"2.1","title":"Sourcing des produits à risques (fleur, verveine etc.)","poids":20.0,"owner":"Fiona","priorite":"","stop":false,"contributors":[],"val_depart":0.0,"val_actuel":0.7,"val_revise":1.0,"val_cible":1.0,"unite":"%","taux":70.0,"taux_land":100},{"id":"2.1.3","parent":"2.1","title":"Notionniser le process passage à l'échelle","poids":25.0,"owner":"Fiona","priorite":"","stop":false,"contributors":[],"val_depart":0.0,"val_actuel":0.7,"val_revise":1.0,"val_cible":1.0,"unite":"%","taux":70.0,"taux_land":100},{"id":"2.1.4","parent":"2.1","title":"Lancer un proto d'essences en canettes","poids":25.0,"owner":"Fx","priorite":"","stop":false,"contributors":["Fiona"],"val_depart":0.0,"val_actuel":0.0,"val_revise":1.0,"val_cible":1.0,"unite":"oui/non","taux":0.0,"taux_land":100.0},{"id":"2.2.1","parent":"2.2","title":"Faire un point avec Cyril Péguet sur les retards","poids":40.0,"owner":"Fx","priorite":"","stop":false,"contributors":["Fiona","Julie"],"val_depart":0.0,"val_actuel":1.0,"val_revise":1.0,"val_cible":1.0,"unite":"oui/non","taux":100.0,"taux_land":100.0},{"id":"2.2.2","parent":"2.2","title":"Valider un plan d'amélioration partagé avec MP","poids":40.0,"owner":"Fiona","priorite":"","stop":false,"contributors":["Fx","Julie"],"val_depart":0.0,"val_actuel":0.5,"val_revise":1.0,"val_cible":1.0,"unite":"%","taux":50.0,"taux_land":100},{"id":"2.2.3","parent":"2.2","title":"Positionner des jalons pour valider le suivi du plan","poids":20.0,"owner":"Fiona","priorite":"","stop":false,"contributors":["Fx","Julie"],"val_depart":0.0,"val_actuel":0.0,"val_revise":1.0,"val_cible":1.0,"unite":"oui/non","taux":0.0,"taux_land":100.0},{"id":"2.3.1","parent":"2.3","title":"Assister à la première réunion","poids":30.0,"owner":"Julie","priorite":"","stop":false,"contributors":[],"val_depart":0.0,"val_actuel":0.0,"val_revise":1.0,"val_cible":1.0,"unite":"oui/non","taux":0.0,"taux_land":100.0},{"id":"2.3.2","parent":"2.3","title":"Définir les besoins communs","poids":20.0,"owner":"Julie","priorite":"","stop":false,"contributors":[],"val_depart":0.0,"val_actuel":0.0,"val_revise":1.0,"val_cible":1.0,"unite":"oui/non","taux":0.0,"taux_land":100.0},{"id":"2.3.3","parent":"2.3","title":"Valider les premiers prototypes","poids":25.0,"owner":"Julie","priorite":"","stop":false,"contributors":[],"val_depart":0.0,"val_actuel":0.0,"val_revise":1.0,"val_cible":1.0,"unite":"%","taux":0,"taux_land":100},{"id":"2.3.4","parent":"2.3","title":"Passer une première commande","poids":25.0,"owner":"Julie","priorite":"","stop":false,"contributors":[],"val_depart":0.0,"val_actuel":0.0,"val_revise":1.0,"val_cible":1.0,"unite":"%","taux":0,"taux_land":100},{"id":"2.4.1","parent":"2.4","title":"Inventorier tous les stocks à déshabiller","poids":30.0,"owner":"Julie","priorite":"","stop":false,"contributors":[],"val_depart":0.0,"val_actuel":1.0,"val_revise":1.0,"val_cible":1.0,"unite":"oui/non","taux":100.0,"taux_land":100.0},{"id":"2.4.2","parent":"2.4","title":"Mettre en place un plan priorités","poids":30.0,"owner":"Julie","priorite":"","stop":false,"contributors":["Fiona"],"val_depart":0.0,"val_actuel":1.0,"val_revise":1.0,"val_cible":1.0,"unite":"%","taux":100,"taux_land":100},{"id":"2.4.3","parent":"2.4","title":"Suivre l'avancement des opérations","poids":20.0,"owner":"Julie","priorite":"","stop":false,"contributors":[],"val_depart":0.0,"val_actuel":1.0,"val_revise":1.0,"val_cible":1.0,"unite":"oui/non","taux":100.0,"taux_land":100.0},{"id":"2.4.4","parent":"2.4","title":"Acter sur les bons process pour une bonne collaboration","poids":20.0,"owner":"Julie","priorite":"","stop":false,"contributors":[],"val_depart":0.0,"val_actuel":1.0,"val_revise":1.0,"val_cible":1.0,"unite":"oui/non","taux":100.0,"taux_land":100.0},{"id":"2.5.1","parent":"2.5","title":"Inventorier les matières premières","poids":20.0,"owner":"Julie","priorite":"","stop":false,"contributors":[],"val_depart":0.0,"val_actuel":0.3,"val_revise":1.0,"val_cible":1.0,"unite":"%","taux":30.0,"taux_land":100},{"id":"2.5.2","parent":"2.5","title":"Identifier les besoins de commandes","poids":40.0,"owner":"Julie","priorite":"","stop":false,"contributors":[],"val_depart":0.0,"val_actuel":0.8,"val_revise":1.0,"val_cible":1.0,"unite":"%","taux":80.0,"taux_land":100},{"id":"2.5.3","parent":"2.5","title":"Se séparer des lots inutiles","poids":40.0,"owner":"Julie","priorite":"","stop":false,"contributors":[],"val_depart":0.0,"val_actuel":0.0,"val_revise":1.0,"val_cible":1.0,"unite":"%","taux":0,"taux_land":100},{"id":"3.1.1","parent":"3.1","title":"Lister les travaux à faire","poids":20.0,"owner":"Julie","priorite":"","stop":false,"contributors":[],"val_depart":0.0,"val_actuel":1.0,"val_revise":1.0,"val_cible":1.0,"unite":"oui/non","taux":100.0,"taux_land":100.0},{"id":"3.1.2","parent":"3.1","title":"Programmer une ou deux soirées d'actions","poids":30.0,"owner":"Julie","priorite":"","stop":false,"contributors":[],"val_depart":0.0,"val_actuel":1.0,"val_revise":1.0,"val_cible":1.0,"unite":"%","taux":100,"taux_land":100},{"id":"3.1.3","parent":"3.1","title":"Aménager la terrasse (ombre, guêpe, amiante, plantes)","poids":30.0,"owner":"Julie","priorite":"","stop":false,"contributors":[],"val_depart":0.0,"val_actuel":1.0,"val_revise":1.0,"val_cible":1.0,"unite":"nb","taux":100,"taux_land":100},{"id":"3.1.4","parent":"3.1","title":"Faire nettoyer toutes les vitres","poids":20.0,"owner":"Julie","priorite":"","stop":false,"contributors":[],"val_depart":0.0,"val_actuel":0.0,"val_revise":2.0,"val_cible":2.0,"unite":"oui/non","taux":0.0,"taux_land":100.0},{"id":"4.1.1","parent":"4.1","title":"Planifier les revues menusuelles de marge","poids":20.0,"owner":"Fx","priorite":"","stop":false,"contributors":["Christelle","Claire","Tomek"],"val_depart":0.0,"val_actuel":1.0,"val_revise":1.0,"val_cible":1.0,"unite":"oui/non","taux":100.0,"taux_land":100.0},{"id":"4.1.2","parent":"4.1","title":"Réaliser les revues de marge par canal","poids":30.0,"owner":"Fx","priorite":"","stop":false,"contributors":["Christelle","Claire","Tomek"],"val_depart":0.0,"val_actuel":5.0,"val_revise":9.0,"val_cible":9.0,"unite":"nb","taux":55.6,"taux_land":100},{"id":"4.1.3","parent":"4.1","title":"Etablir les indicateurs de marge mensuelles","poids":20.0,"owner":"Fx","priorite":"","stop":false,"contributors":[],"val_depart":0.0,"val_actuel":1.0,"val_revise":1.0,"val_cible":1.0,"unite":"oui/non","taux":100.0,"taux_land":100.0},{"id":"4.1.4","parent":"4.1","title":"Mettre en place un nouveau rendu de reporting mensuel","poids":20.0,"owner":"Fx","priorite":"","stop":false,"contributors":[],"val_depart":0.0,"val_actuel":1.0,"val_revise":1.0,"val_cible":1.0,"unite":"%","taux":100,"taux_land":100},{"id":"4.1.5","parent":"4.1","title":"Mettrre en place une revue trimestrielle du budget","poids":10.0,"owner":"Fx","priorite":"","stop":false,"contributors":[],"val_depart":0.0,"val_actuel":1.0,"val_revise":1.0,"val_cible":1.0,"unite":"oui/non","taux":100.0,"taux_land":100.0},{"id":"4.2.1","parent":"4.2","title":"Faire un premier rendrez-vous avec BPI, La Nef et Credolending","poids":30.0,"owner":"Fx","priorite":"","stop":false,"contributors":[],"val_depart":0.0,"val_actuel":1.0,"val_revise":1.0,"val_cible":1.0,"unite":"oui/non","taux":100.0,"taux_land":100.0},{"id":"4.2.2","parent":"4.2","title":"Fixer nos objectifs de négociation avec chacun","poids":30.0,"owner":"Fx","priorite":"","stop":false,"contributors":[],"val_depart":0.0,"val_actuel":1.0,"val_revise":1.0,"val_cible":1.0,"unite":"oui/non","taux":100.0,"taux_land":100.0},{"id":"4.2.3","parent":"4.2","title":"Finaliser le report de nos échéances URSSAF","poids":30.0,"owner":"Fx","priorite":"","stop":false,"contributors":[],"val_depart":0.0,"val_actuel":0.0,"val_revise":1.0,"val_cible":1.0,"unite":"oui/non","taux":0.0,"taux_land":100.0},{"id":"4.2.4","parent":"4.2","title":"Définir le plan de paiement de WAF","poids":10.0,"owner":"Fx","priorite":"","stop":false,"contributors":[],"val_depart":0.0,"val_actuel":1.0,"val_revise":1.0,"val_cible":1.0,"unite":"oui/non","taux":100.0,"taux_land":100.0},{"id":"4.3.1","parent":"4.3","title":"Formaliser l'accord Ratchet avec le Board","poids":10.0,"owner":"Fx","priorite":"","stop":false,"contributors":[],"val_depart":0.0,"val_actuel":1.0,"val_revise":1.0,"val_cible":1.0,"unite":"oui/non","taux":100.0,"taux_land":100.0},{"id":"4.3.2","parent":"4.3","title":"Décaisser le compte de capital","poids":20.0,"owner":"Fx","priorite":"","stop":false,"contributors":[],"val_depart":0.0,"val_actuel":1.0,"val_revise":1.0,"val_cible":1.0,"unite":"oui/non","taux":100.0,"taux_land":100.0},{"id":"4.3.3","parent":"4.3","title":"Finaliser les ACC de Ponton & Co.","poids":10.0,"owner":"Fx","priorite":"","stop":false,"contributors":[],"val_depart":0.0,"val_actuel":1.0,"val_revise":1.0,"val_cible":1.0,"unite":"oui/non","taux":100.0,"taux_land":100.0},{"id":"4.3.4","parent":"4.3","title":"Sécuriser 300k€ supplémentaire dans la délégation","poids":40.0,"owner":"Tomek","priorite":"","stop":false,"contributors":["Fx"],"val_depart":0.0,"val_actuel":100.0,"val_revise":300.0,"val_cible":300.0,"unite":"€","taux":33.3,"taux_land":100},{"id":"4.3.5","parent":"4.3","title":"Partage en core team la vision du BP négo","poids":10.0,"owner":"Fx","priorite":"","stop":false,"contributors":[],"val_depart":0.0,"val_actuel":1.0,"val_revise":1.0,"val_cible":1.0,"unite":"oui/non","taux":100.0,"taux_land":100.0},{"id":"4.3.6","parent":"4.3","title":"Réaliser l'AGAOA 2025","poids":10.0,"owner":"Fx","priorite":"","stop":false,"contributors":["Tomek"],"val_depart":0.0,"val_actuel":0.0,"val_revise":1.0,"val_cible":1.0,"unite":"oui/non","taux":0.0,"taux_land":100.0},{"id":"5.1.1","parent":"5.1","title":"Faire le point sur les actions engagées en 2024 et 2025","poids":10.0,"owner":"Fx","priorite":"","stop":false,"contributors":[],"val_depart":0.0,"val_actuel":1.0,"val_revise":1.0,"val_cible":1.0,"unite":"oui/non","taux":100.0,"taux_land":100.0},{"id":"5.1.2","parent":"5.1","title":"Finaliser le plan d'action 2026 de régénération du Domaine","poids":30.0,"owner":"Fx","priorite":"","stop":false,"contributors":[],"val_depart":0.0,"val_actuel":0.0,"val_revise":1.0,"val_cible":1.0,"unite":"oui/non","taux":0.0,"taux_land":100.0},{"id":"5.1.3","parent":"5.1","title":"Partager le plan d'action 2026 de régénération du Domaine avec Elise et Christian","poids":20.0,"owner":"Fx","priorite":"","stop":false,"contributors":[],"val_depart":0.0,"val_actuel":0.0,"val_revise":1.0,"val_cible":1.0,"unite":"oui/non","taux":0.0,"taux_land":100.0},{"id":"5.1.4","parent":"5.1","title":"Engager les premières actions","poids":10.0,"owner":"Fx","priorite":"","stop":false,"contributors":[],"val_depart":0.0,"val_actuel":0.0,"val_revise":1.0,"val_cible":1.0,"unite":"oui/non","taux":0.0,"taux_land":100.0},{"id":"5.1.5","parent":"5.1","title":"Définir les process de suivi du plan d'action","poids":10.0,"owner":"Fx","priorite":"","stop":false,"contributors":[],"val_depart":0.0,"val_actuel":0.0,"val_revise":1.0,"val_cible":1.0,"unite":"oui/non","taux":0.0,"taux_land":100.0},{"id":"5.1.6","parent":"5.1","title":"Cueillir les calendulas et les faire sécher","poids":10.0,"owner":"Fx","priorite":"","stop":false,"contributors":[],"val_depart":0.0,"val_actuel":0.0,"val_revise":1.0,"val_cible":1.0,"unite":"oui/non","taux":0.0,"taux_land":100.0},{"id":"5.1.7","parent":"5.1","title":"Livrer les calendulas à Greentech ou être prêt","poids":10.0,"owner":"Fx","priorite":"","stop":false,"contributors":[],"val_depart":0.0,"val_actuel":0.0,"val_revise":1.0,"val_cible":1.0,"unite":"oui/non","taux":0.0,"taux_land":100.0},{"id":"5.2.1","parent":"5.2","title":"Finaliser le dossier d'agrément ESUS pour la FSDO","poids":50.0,"owner":"Fx","priorite":"STOP","stop":true,"contributors":["Fiona"],"val_depart":0.0,"val_actuel":0.0,"val_revise":1.0,"val_cible":1.0,"unite":"oui/non","taux":0.0,"taux_land":100.0},{"id":"5.2.2","parent":"5.2","title":"Faire l'AGO de la FSDO","poids":30.0,"owner":"Fx","priorite":"","stop":false,"contributors":[],"val_depart":0.0,"val_actuel":0.0,"val_revise":1.0,"val_cible":1.0,"unite":"oui/non","taux":0.0,"taux_land":100.0},{"id":"5.2.3","parent":"5.2","title":"Assainir les comptes courants de la FSDO","poids":20.0,"owner":"Fx","priorite":"","stop":false,"contributors":[],"val_depart":0.0,"val_actuel":0.0,"val_revise":1.0,"val_cible":1.0,"unite":"oui/non","taux":0.0,"taux_land":100.0},{"id":"5.3.1","parent":"5.3","title":"Définir le projet de vendanges","poids":40.0,"owner":"Fx","priorite":"","stop":false,"contributors":[],"val_depart":0.0,"val_actuel":0.0,"val_revise":1.0,"val_cible":1.0,"unite":"oui/non","taux":0.0,"taux_land":100.0},{"id":"5.3.2","parent":"5.3","title":"Gérer avec Christian l'organisation","poids":60.0,"owner":"Fx","priorite":"","stop":false,"contributors":[],"val_depart":0.0,"val_actuel":0.0,"val_revise":1.0,"val_cible":1.0,"unite":"oui/non","taux":0.0,"taux_land":100.0},{"id":"6.1.1","parent":"6.1","title":"Déploiement plan vin 2026 : RDV national avec achats & direction commerciale","poids":20.0,"owner":"Christelle","priorite":"","stop":false,"contributors":["Tomek"],"val_depart":0.0,"val_actuel":50.0,"val_revise":100.0,"val_cible":100.0,"unite":"%","taux":50.0,"taux_land":100},{"id":"6.1.2","parent":"6.1","title":"Finalisation VVF et relance Logis Hôtel, Dupont Restauration, Pro Achat prospection Belambra, Vacances bleues, Moma group, Babel Communauty, Trinity, Radisson Hôtels","poids":20.0,"owner":"Christelle","priorite":"","stop":false,"contributors":[],"val_depart":0.0,"val_actuel":3.0,"val_revise":10.0,"val_cible":10.0,"unite":"nb","taux":30.0,"taux_land":100},{"id":"6.1.3","parent":"6.1","title":"RDV ciblés sur 3 succursales clés : IDF, Bretagne, AURA","poids":15.0,"owner":"Christelle","priorite":"","stop":false,"contributors":["Maxime"],"val_depart":0.0,"val_actuel":1.0,"val_revise":3.0,"val_cible":3.0,"unite":"nb","taux":33.3,"taux_land":100},{"id":"6.1.4","parent":"6.1","title":"Activer force de vente Episaveurs avec supports audio/vidéo","poids":15.0,"owner":"Christelle","priorite":"","stop":false,"contributors":["Tomek","Guillemette"],"val_depart":0.0,"val_actuel":60.0,"val_revise":100.0,"val_cible":100.0,"unite":"%","taux":60.0,"taux_land":100},{"id":"6.1.5","parent":"6.1","title":"Pousser référencements & upsales : vin, sodas, minis, champagne, BIB","poids":15.0,"owner":"Christelle","priorite":"","stop":false,"contributors":[],"val_depart":0.0,"val_actuel":60.0,"val_revise":100.0,"val_cible":100.0,"unite":"%","taux":60.0,"taux_land":100},{"id":"6.1.6","parent":"6.1","title":"Suivi test consigne Rhône-Alpes","poids":15.0,"owner":"Christelle","priorite":"","stop":false,"contributors":["Tomek"],"val_depart":0.0,"val_actuel":0.1,"val_revise":1.0,"val_cible":1.0,"unite":"%","taux":10.0,"taux_land":100},{"id":"6.2.1","parent":"6.2","title":"Débloquer à minima un GC avec récurrence de volumes (CP, Intercontinental)","poids":40.0,"owner":"Claire","priorite":"","stop":false,"contributors":[],"val_depart":0.0,"val_actuel":1.0,"val_revise":1.0,"val_cible":1.0,"unite":"nb","taux":100,"taux_land":100},{"id":"6.2.2","parent":"6.2","title":"Renouveler promotion nationale S2 2026 via EAZLE","poids":30.0,"owner":"Claire","priorite":"","stop":false,"contributors":[],"val_depart":0.0,"val_actuel":0.0,"val_revise":1.0,"val_cible":1.0,"unite":"nb","taux":0,"taux_land":100},{"id":"6.2.3","parent":"6.2","title":"ACCOR: établir le plan promotionnel annuel avec 2 promotions pour l'année","poids":30.0,"owner":"Claire","priorite":"","stop":false,"contributors":[],"val_depart":0.0,"val_actuel":1.0,"val_revise":2.0,"val_cible":2.0,"unite":"nb","taux":50.0,"taux_land":100},{"id":"6.2.4","parent":"6.2","title":"ACCOR: obtenir 3 nouveaux établissements ACCOR direct ou indirect","poids":0.0,"owner":"Claire","priorite":"","stop":false,"contributors":["Maxime"],"val_depart":0.0,"val_actuel":3.0,"val_revise":3.0,"val_cible":3.0,"unite":"nb","taux":100,"taux_land":100},{"id":"6.2.5","parent":"6.2","title":"ACCOR: avoir pris contact avec tous les clients existants directs et indirects","poids":0.0,"owner":"Maxime","priorite":"","stop":false,"contributors":["Claire"],"val_depart":4.0,"val_actuel":14.0,"val_revise":31.0,"val_cible":31.0,"unite":"nb","taux":37.0,"taux_land":100},{"id":"6.3.1","parent":"6.3","title":"RDV S2 2026 : DG Grands Comptes & CHR","poids":25.0,"owner":"Tomek","priorite":"","stop":false,"contributors":[],"val_depart":0.0,"val_actuel":0.0,"val_revise":1.0,"val_cible":1.0,"unite":"nb","taux":0,"taux_land":100},{"id":"6.3.2","parent":"6.3","title":"RDV GC prioritaires : Groupe Bertrand, Sodexo, Areas, Elior","poids":25.0,"owner":"Tomek","priorite":"","stop":false,"contributors":[],"val_depart":0.0,"val_actuel":2.0,"val_revise":4.0,"val_cible":4.0,"unite":"nb","taux":50.0,"taux_land":100},{"id":"6.3.3","parent":"6.3","title":"Référencements & upsales : sodas nationaux et catalogue promo vins","poids":25.0,"owner":"Tomek","priorite":"","stop":false,"contributors":[],"val_depart":0.0,"val_actuel":1.0,"val_revise":2.0,"val_cible":2.0,"unite":"nb","taux":50.0,"taux_land":100},{"id":"6.3.4","parent":"6.3","title":"RDV responsable réseau Inter Caves","poids":25.0,"owner":"Tomek","priorite":"","stop":false,"contributors":[],"val_depart":0.0,"val_actuel":0.0,"val_revise":1.0,"val_cible":1.0,"unite":"nb","taux":0,"taux_land":100},{"id":"6.4.1","parent":"6.4","title":"Maintenir relation LPQ Belgique et s'informer des ouvertures","poids":100.0,"owner":"Claire","priorite":"","stop":false,"contributors":[],"val_depart":0.0,"val_actuel":0.3,"val_revise":1.0,"val_cible":1.0,"unite":"%","taux":30.0,"taux_land":100},{"id":"6.4.2","parent":"6.4","title":"Organiser une session photoshoot dans un établissement LPQ","poids":0.0,"owner":"Claire","priorite":"P3","stop":false,"contributors":["Guillemette"],"val_depart":0.0,"val_actuel":0.0,"val_revise":1.0,"val_cible":1.0,"unite":"oui/non","taux":0.0,"taux_land":100.0},{"id":"6.5.1","parent":"6.5","title":"Finaliser les discussions avec Horeca","poids":30.0,"owner":"Christelle","priorite":"","stop":false,"contributors":[],"val_depart":0.0,"val_actuel":0.8,"val_revise":1.0,"val_cible":1.0,"unite":"oui/non","taux":0.0,"taux_land":100.0},{"id":"6.5.2","parent":"6.5","title":"Closer Flunch","poids":70.0,"owner":"Tomek","priorite":"","stop":false,"contributors":[],"val_depart":0.0,"val_actuel":0.3,"val_revise":1.0,"val_cible":1.0,"unite":"oui/non","taux":0.0,"taux_land":100.0},{"id":"6.6.1","parent":"6.6","title":"RDV S2 2026 : Azade, Milliet, Native, Barnum, Mes Boissons, Murgier","poids":25.0,"owner":"Christelle","priorite":"","stop":false,"contributors":["Claire","Tomek","Maxime"],"val_depart":0.0,"val_actuel":1.0,"val_revise":6.0,"val_cible":6.0,"unite":"nb","taux":16.7,"taux_land":100},{"id":"6.6.2","parent":"6.6","title":"Maintenir référencements & gammes stratégiques","poids":25.0,"owner":"Christelle","priorite":"","stop":false,"contributors":["Claire","Tomek","Maxime"],"val_depart":0.0,"val_actuel":30.0,"val_revise":100.0,"val_cible":100.0,"unite":"%","taux":30.0,"taux_land":100},{"id":"6.6.3","parent":"6.6","title":"Recréer lien terrain : 1 tournée par distributeur","poids":15.0,"owner":"Christelle","priorite":"","stop":false,"contributors":["Claire","Tomek","Maxime"],"val_depart":0.0,"val_actuel":2.0,"val_revise":6.0,"val_cible":6.0,"unite":"nb","taux":33.3,"taux_land":100},{"id":"6.6.4","parent":"6.6","title":"Convertir 40 prospects finaux à fort volume","poids":35.0,"owner":"Christelle","priorite":"","stop":false,"contributors":["Claire","Tomek","Maxime"],"val_depart":0.0,"val_actuel":3.0,"val_revise":40.0,"val_cible":40.0,"unite":"nb","taux":7.5,"taux_land":100},{"id":"6.7.1","parent":"6.7","title":"Fidéliser 3 top clients existants et étendre vin/sodas/champagne (Continental Marseille, Lyon)","poids":70.0,"owner":"Christelle","priorite":"","stop":false,"contributors":["Claire","Tomek","Maxime"],"val_depart":0.0,"val_actuel":2.0,"val_revise":3.0,"val_cible":3.0,"unite":"nb","taux":66.7,"taux_land":100},{"id":"6.7.2","parent":"6.7","title":"Convertir 5 prospects CHR à fort potentiel + 3 premium champagne","poids":30.0,"owner":"Christelle","priorite":"","stop":false,"contributors":["Claire","Tomek","Maxime"],"val_depart":0.0,"val_actuel":3.0,"val_revise":5.0,"val_cible":5.0,"unite":"nb","taux":60.0,"taux_land":100},{"id":"6.8.1","parent":"6.8","title":"Métro : RDV construction S2 2026","poids":60.0,"owner":"Christelle","priorite":"","stop":false,"contributors":[],"val_depart":0.0,"val_actuel":0.0,"val_revise":1.0,"val_cible":1.0,"unite":"nb","taux":0,"taux_land":100},{"id":"6.8.2","parent":"6.8","title":"Déployer top 15 magasins et initier test réemploi","poids":40.0,"owner":"Christelle","priorite":"","stop":false,"contributors":["Maxime"],"val_depart":0.0,"val_actuel":0.0,"val_revise":15.0,"val_cible":15.0,"unite":"nb","taux":0,"taux_land":100},{"id":"7.1.1","parent":"7.1","title":"Finaliser projet Carrefour Restart","poids":25.0,"owner":"Tomek","priorite":"","stop":false,"contributors":["Fx"],"val_depart":0.0,"val_actuel":0.7,"val_revise":1.0,"val_cible":1.0,"unite":"%","taux":70.0,"taux_land":100},{"id":"7.1.2","parent":"7.1","title":"Déploiement : +30 magasins","poids":25.0,"owner":"Christelle","priorite":"","stop":false,"contributors":[],"val_depart":0.0,"val_actuel":0.0,"val_revise":30.0,"val_cible":30.0,"unite":"nb","taux":0,"taux_land":100},{"id":"7.1.3","parent":"7.1","title":"RDV par gamme Vin & Essence","poids":25.0,"owner":"Christelle","priorite":"","stop":false,"contributors":[],"val_depart":0.0,"val_actuel":2.0,"val_revise":2.0,"val_cible":2.0,"unite":"nb","taux":100,"taux_land":100},{"id":"7.1.4","parent":"7.1","title":"Animations Q2 : 30 magasins Reuse/Loop","poids":25.0,"owner":"Christelle","priorite":"","stop":false,"contributors":[],"val_depart":0.0,"val_actuel":30.0,"val_revise":30.0,"val_cible":30.0,"unite":"nb","taux":100,"taux_land":100},{"id":"7.2.1","parent":"7.2","title":"Déploiement : +30 ITM, +5 U, +5 Monoprix (12 références)","poids":25.0,"owner":"Christelle","priorite":"","stop":false,"contributors":[],"val_depart":0.0,"val_actuel":24.0,"val_revise":40.0,"val_cible":40.0,"unite":"nb","taux":60.0,"taux_land":100},{"id":"7.2.2","parent":"7.2","title":"Salons et gestion post salon commandes : ITM Ouest & Centre Est","poids":25.0,"owner":"Christelle","priorite":"","stop":false,"contributors":[],"val_depart":0.0,"val_actuel":2.0,"val_revise":2.0,"val_cible":2.0,"unite":"nb","taux":100,"taux_land":100},{"id":"7.2.3","parent":"7.2","title":"RDV de référencement enseignes : U Ouest/IDF, Monoprix","poids":25.0,"owner":"Christelle","priorite":"","stop":false,"contributors":[],"val_depart":0.0,"val_actuel":2.0,"val_revise":3.0,"val_cible":3.0,"unite":"nb","taux":66.7,"taux_land":100},{"id":"7.2.4","parent":"7.2","title":"Animations Q2 : 40 magasins Reuse/LCPR + zones réemploi","poids":15.0,"owner":"Christelle","priorite":"","stop":false,"contributors":[],"val_depart":0.0,"val_actuel":40.0,"val_revise":40.0,"val_cible":40.0,"unite":"nb","taux":100,"taux_land":100},{"id":"7.2.5","parent":"7.2","title":"Promotions : construction plan promo S2 2026 Monoprix et ITM Centre Est","poids":10.0,"owner":"Christelle","priorite":"","stop":false,"contributors":[],"val_depart":0.0,"val_actuel":0.0,"val_revise":2.0,"val_cible":2.0,"unite":"nb","taux":0,"taux_land":100},{"id":"7.3.1","parent":"7.3","title":"déploiement : +3 magasins VIP Leclerc","poids":35.0,"owner":"Christelle","priorite":"","stop":false,"contributors":[],"val_depart":0.0,"val_actuel":1.0,"val_revise":3.0,"val_cible":3.0,"unite":"nb","taux":33.3,"taux_land":100},{"id":"7.3.2","parent":"7.3","title":"RDV Franprix : bilan canette vins","poids":35.0,"owner":"Christelle","priorite":"","stop":false,"contributors":[],"val_depart":0.0,"val_actuel":1.0,"val_revise":1.0,"val_cible":1.0,"unite":"nb","taux":100,"taux_land":100},{"id":"7.3.3","parent":"7.3","title":"Animations Q2 : 3 VIP Leclerc","poids":30.0,"owner":"Christelle","priorite":"","stop":false,"contributors":[],"val_depart":0.0,"val_actuel":1.0,"val_revise":3.0,"val_cible":3.0,"unite":"nb","taux":33.3,"taux_land":100},{"id":"7.4.1","parent":"7.4","title":"Réussite temps forts : apéro, Coupe du Monde","poids":100.0,"owner":"Christelle","priorite":"","stop":false,"contributors":[],"val_depart":0.0,"val_actuel":60.0,"val_revise":1.0,"val_cible":1.0,"unite":"%","taux":100,"taux_land":100},{"id":"7.5.1","parent":"7.5","title":"Pilotage Reuse et influence IDF, Centre Est","poids":40.0,"owner":"Christelle","priorite":"","stop":false,"contributors":[],"val_depart":0.0,"val_actuel":0.7,"val_revise":1.0,"val_cible":1.0,"unite":"%","taux":70.0,"taux_land":100},{"id":"7.5.2","parent":"7.5","title":"Partenaires clés : Loop, GO Réemploi!, Petrel, Revera, Leko, Citéo","poids":30.0,"owner":"Christelle","priorite":"","stop":false,"contributors":[],"val_depart":0.0,"val_actuel":0.6,"val_revise":1.0,"val_cible":1.0,"unite":"%","taux":60.0,"taux_land":100},{"id":"7.5.3","parent":"7.5","title":"Salon Reuse Exconomy Expo","poids":30.0,"owner":"Christelle","priorite":"","stop":false,"contributors":[],"val_depart":0.0,"val_actuel":1.0,"val_revise":1.0,"val_cible":1.0,"unite":"nb","taux":100,"taux_land":100},{"id":"7.6.1","parent":"7.6","title":"Naturalia : finaliser référencement vins/sodas + 10 animations","poids":40.0,"owner":"Christelle","priorite":"","stop":false,"contributors":[],"val_depart":0.0,"val_actuel":0.9,"val_revise":100.0,"val_cible":100.0,"unite":"%","taux":0.9,"taux_land":100},{"id":"7.6.2","parent":"7.6","title":"La Vie Claire : poursuivre discussions vins","poids":30.0,"owner":"Christelle","priorite":"","stop":false,"contributors":[],"val_depart":0.0,"val_actuel":0.4,"val_revise":1.0,"val_cible":1.0,"unite":"nb","taux":40.0,"taux_land":100},{"id":"7.6.3","parent":"7.6","title":"Grand Frais : transformer RDV sodas en référencement","poids":30.0,"owner":"Christelle","priorite":"","stop":false,"contributors":[],"val_depart":0.0,"val_actuel":0.4,"val_revise":1.0,"val_cible":1.0,"unite":"nb","taux":40.0,"taux_land":100},{"id":"7.7.1","parent":"7.7","title":"V&B : poursuivre échanges","poids":50.0,"owner":"Tomek","priorite":"","stop":false,"contributors":[],"val_depart":0.0,"val_actuel":0.8,"val_revise":1.0,"val_cible":1.0,"unite":"nb","taux":80.0,"taux_land":100},{"id":"7.7.2","parent":"7.7","title":"Nicolas : obtenir référencement soft vin test","poids":50.0,"owner":"Christelle","priorite":"","stop":false,"contributors":[],"val_depart":0.0,"val_actuel":0.4,"val_revise":1.0,"val_cible":1.0,"unite":"nb","taux":40.0,"taux_land":100},{"id":"7.8.1","parent":"7.8","title":"Lidl : poursuivre échanges","poids":100.0,"owner":"Tomek","priorite":"","stop":false,"contributors":[],"val_depart":0.0,"val_actuel":0.3,"val_revise":1.0,"val_cible":1.0,"unite":"nb","taux":30.0,"taux_land":100},{"id":"7.9.1","parent":"7.9","title":"Le Petit Ballon : closer box découverte réemploi","poids":70.0,"owner":"Christelle","priorite":"","stop":false,"contributors":[],"val_depart":0.0,"val_actuel":0.4,"val_revise":1.0,"val_cible":1.0,"unite":"nb","taux":40.0,"taux_land":100},{"id":"7.9.2","parent":"7.9","title":"La Fourche : optimiser destockage","poids":20.0,"owner":"Christelle","priorite":"","stop":false,"contributors":[],"val_depart":0.0,"val_actuel":1.0,"val_revise":1.0,"val_cible":1.0,"unite":"%","taux":100,"taux_land":100},{"id":"7.9.3","parent":"7.9","title":"Proposition Nous anti-gaspi : relancer opportunités","poids":10.0,"owner":"Christelle","priorite":"","stop":false,"contributors":[],"val_depart":0.0,"val_actuel":1.0,"val_revise":1.0,"val_cible":1.0,"unite":"%","taux":100,"taux_land":100},{"id":"8.1.1","parent":"8.1","title":"Pousser l'activité Essences à 10% de notre activité sur le Q2 (vs 2% sur Q1)","poids":40.0,"owner":"Christelle","priorite":"","stop":false,"contributors":["Tomek","Claire","Maxime"],"val_depart":0.0,"val_actuel":0.5,"val_revise":1.0,"val_cible":1.0,"unite":"%","taux":50.0,"taux_land":100},{"id":"8.1.2","parent":"8.1","title":"Caler et animer les réunions de suivi top cibles, point mensuel CA et trimestriel budget CA","poids":30.0,"owner":"Christelle","priorite":"","stop":false,"contributors":["Tomek","Claire"],"val_depart":0.0,"val_actuel":0.6,"val_revise":1.0,"val_cible":1.0,"unite":"%","taux":60.0,"taux_land":100},{"id":"8.1.3","parent":"8.1","title":"Piloter l'évolution du CA et marge par canal/top cibles pour se rapprocher de l'équilibre","poids":30.0,"owner":"Christelle","priorite":"","stop":false,"contributors":["Tomek","Claire","Fx"],"val_depart":0.0,"val_actuel":0.4,"val_revise":1.0,"val_cible":1.0,"unite":"%","taux":40.0,"taux_land":100},{"id":"8.2.1","parent":"8.2","title":"Rencontrer plusieurs partenaires potentiels et autres fournisseurs ayant déjà éprouvé des modèles terrains","poids":50.0,"owner":"Christelle","priorite":"","stop":false,"contributors":["Tomek"],"val_depart":0.0,"val_actuel":0.2,"val_revise":1.0,"val_cible":1.0,"unite":"%","taux":20.0,"taux_land":100},{"id":"8.2.2","parent":"8.2","title":"Recruter les alternants RFH sales Paris et Aura","poids":50.0,"owner":"Christelle","priorite":"","stop":false,"contributors":["Tomek"],"val_depart":0.0,"val_actuel":0.6,"val_revise":2.0,"val_cible":2.0,"unite":"nb","taux":30.0,"taux_land":100},{"id":"8.3.1","parent":"8.3","title":"Caler les communications sales sur le Q2","poids":50.0,"owner":"Christelle","priorite":"","stop":false,"contributors":["Tomek","Guillemette","Juliette"],"val_depart":0.0,"val_actuel":1.0,"val_revise":3.0,"val_cible":3.0,"unite":"nb","taux":33.3,"taux_land":100},{"id":"8.3.2","parent":"8.3","title":"Co-construire avec le marketing les besoins pour le S2 2026","poids":50.0,"owner":"Christelle","priorite":"","stop":false,"contributors":["Tomek","Guillemette","Juliette"],"val_depart":0.0,"val_actuel":3.0,"val_revise":6.0,"val_cible":6.0,"unite":"nb","taux":50.0,"taux_land":100},{"id":"8.4.1","parent":"8.4","title":"Actualiser les présentations commerciales 2026","poids":25.0,"owner":"Christelle","priorite":"","stop":false,"contributors":["Tomek","Guillemette","Juliette"],"val_depart":0.0,"val_actuel":0.5,"val_revise":1.0,"val_cible":1.0,"unite":"%","taux":50.0,"taux_land":100},{"id":"8.4.2","parent":"8.4","title":"Exploiter outils commerciaux (méthodes de ventes, scripts) et former équipes","poids":25.0,"owner":"Christelle","priorite":"","stop":false,"contributors":["Tomek","Guillemette","Juliette"],"val_depart":0.0,"val_actuel":0.4,"val_revise":1.0,"val_cible":1.0,"unite":"%","taux":40.0,"taux_land":100},{"id":"8.4.3","parent":"8.4","title":"Argumentaire “Juste Rémunération”","poids":25.0,"owner":"Christelle","priorite":"","stop":false,"contributors":["Tomek","Fx"],"val_depart":0.0,"val_actuel":0.6,"val_revise":1.0,"val_cible":1.0,"unite":"%","taux":60.0,"taux_land":100},{"id":"8.4.4","parent":"8.4","title":"Suivi test étiquettes GMS pour optimiser sell-out","poids":25.0,"owner":"Christelle","priorite":"","stop":false,"contributors":["Tomek","Fiona"],"val_depart":0.0,"val_actuel":0.4,"val_revise":1.0,"val_cible":1.0,"unite":"%","taux":40.0,"taux_land":100},{"id":"8.5.1","parent":"8.5","title":"Finaliser les dahsboard de suivi interne mensuel avec la finance","poids":50.0,"owner":"Christelle","priorite":"","stop":false,"contributors":["Tomek","Fx"],"val_depart":0.0,"val_actuel":0.5,"val_revise":1.0,"val_cible":1.0,"unite":"%","taux":50.0,"taux_land":100},{"id":"8.5.2","parent":"8.5","title":"Améliorer le suivi des tâches et des transactions Hubspot","poids":50.0,"owner":"Christelle","priorite":"","stop":false,"contributors":["Tomek","Claire","Maxime"],"val_depart":0.0,"val_actuel":0.5,"val_revise":1.0,"val_cible":1.0,"unite":"%","taux":50.0,"taux_land":100},{"id":"8.6.1","parent":"8.6","title":"Caler les routines avec la finance, prev, supply et le marketing pour anticiper les besoins","poids":50.0,"owner":"Christelle","priorite":"","stop":false,"contributors":[],"val_depart":0.0,"val_actuel":1.0,"val_revise":1.0,"val_cible":1.0,"unite":"%","taux":100,"taux_land":100},{"id":"8.6.2","parent":"8.6","title":"Améliorer les prévisions sales France","poids":50.0,"owner":"Christelle","priorite":"","stop":false,"contributors":["Tomek","Claire"],"val_depart":0.0,"val_actuel":0.5,"val_revise":1.0,"val_cible":1.0,"unite":"%","taux":50.0,"taux_land":100},{"id":"9.1.1","parent":"9.1","title":"3 Newsletter ciblés B2B et 1 Newsletter Export","poids":30.0,"owner":"Guillemette","priorite":"","stop":false,"contributors":[],"val_depart":0.0,"val_actuel":3.0,"val_revise":4.0,"val_cible":4.0,"unite":"nb","taux":75.0,"taux_land":100},{"id":"9.1.2","parent":"9.1","title":"Assurer la visibilité LinkedIn : 12 publications (dont 1 post / mois avec un partenaire)","poids":30.0,"owner":"Juliette","priorite":"","stop":false,"contributors":["Guillemette"],"val_depart":0.0,"val_actuel":19.0,"val_revise":12.0,"val_cible":12.0,"unite":"nb","taux":100,"taux_land":100},{"id":"9.1.3","parent":"9.1","title":"Mettre à jour les présentations commerciales","poids":20.0,"owner":"Juliette","priorite":"","stop":false,"contributors":["Juliette","Guillemette"],"val_depart":0.0,"val_actuel":0.8,"val_revise":1.0,"val_cible":1.0,"unite":"%","taux":80.0,"taux_land":100},{"id":"9.1.4","parent":"9.1","title":"Créer 3 types de PLV efficaces : restaurateurs, traiteurs et GMS","poids":20.0,"owner":"Juliette","priorite":"","stop":false,"contributors":["Juliette"],"val_depart":0.0,"val_actuel":0.0,"val_revise":3.0,"val_cible":3.0,"unite":"nb","taux":0,"taux_land":100},{"id":"9.2.1","parent":"9.2","title":"Réserver le stand, m2 et emplacement dans le salon avec les vignerons engagés","poids":100.0,"owner":"Guillemette","priorite":"","stop":false,"contributors":[],"val_depart":0.0,"val_actuel":1.0,"val_revise":1.0,"val_cible":1.0,"unite":"oui/non","taux":100.0,"taux_land":100.0},{"id":"9.3.1","parent":"9.3","title":"Construire le plan de communication du Vin de Lyon et mettre en place de l’opérationnel","poids":40.0,"owner":"Guillemette","priorite":"","stop":false,"contributors":["Juliette"],"val_depart":0.0,"val_actuel":0.0,"val_revise":1.0,"val_cible":1.0,"unite":"%","taux":0,"taux_land":100},{"id":"9.3.2","parent":"9.3","title":"Adapter les PLV aux nouvelles étiquettes GMS si lancement validé","poids":60.0,"owner":"Juliette","priorite":"","stop":false,"contributors":[],"val_depart":0.0,"val_actuel":0.0,"val_revise":1.0,"val_cible":1.0,"unite":"%","taux":0,"taux_land":100},{"id":"9.4.1","parent":"9.4","title":"Créer le calendrier éditorial Printemps / Été","poids":15.0,"owner":"Guillemette","priorite":"","stop":false,"contributors":[],"val_depart":0.0,"val_actuel":0.9,"val_revise":1.0,"val_cible":1.0,"unite":"%","taux":90.0,"taux_land":100},{"id":"9.4.2","parent":"9.4","title":"Préparer les lancements (Suite Oé, Bureaux du coeur)","poids":5.0,"owner":"Guillemette","priorite":"","stop":false,"contributors":["Juliette"],"val_depart":0.0,"val_actuel":0.0,"val_revise":1.0,"val_cible":1.0,"unite":"%","taux":0,"taux_land":100},{"id":"9.4.3","parent":"9.4","title":"Rédiger et publier 3 articles de blog","poids":10.0,"owner":"Guillemette","priorite":"","stop":false,"contributors":["Guillemette"],"val_depart":0.0,"val_actuel":1.0,"val_revise":3.0,"val_cible":3.0,"unite":"nb","taux":33.3,"taux_land":100},{"id":"9.4.4","parent":"9.4","title":"Publier 6 vidéos partenaires Printemps / Été","poids":20.0,"owner":"Juliette","priorite":"","stop":false,"contributors":[],"val_depart":0.0,"val_actuel":2.0,"val_revise":6.0,"val_cible":6.0,"unite":"nb","taux":33.3,"taux_land":100},{"id":"9.4.5","parent":"9.4","title":"Publier 12 post IG, 12 post LK, 3 NL btoc","poids":20.0,"owner":"Juliette","priorite":"","stop":false,"contributors":["Guillemette"],"val_depart":0.0,"val_actuel":31.0,"val_revise":27.0,"val_cible":27.0,"unite":"nb","taux":100,"taux_land":100},{"id":"9.4.6","parent":"9.4","title":"Faire un sprint “réels d’essai” : créer et publier 25 réels d'essai, évaluer les statistiques et stuatuer","poids":5.0,"owner":"Juliette","priorite":"","stop":false,"contributors":["Guillemette"],"val_depart":0.0,"val_actuel":100.0,"val_revise":1.0,"val_cible":1.0,"unite":"%","taux":100,"taux_land":100},{"id":"9.4.7","parent":"9.4","title":"Dynamiser la relation avec nos collaborateurs export (1 / saison) grâce à la création d’un dossier de presse et d’échanges de mails","poids":10.0,"owner":"Juliette","priorite":"","stop":false,"contributors":["Guillemette"],"val_depart":0.0,"val_actuel":1.0,"val_revise":1.0,"val_cible":1.0,"unite":"oui/non","taux":100.0,"taux_land":100.0},{"id":"9.4.8","parent":"9.4","title":"Mettre à jour les signatures mails et l'animation du site 1 fois par mois","poids":5.0,"owner":"Juliette","priorite":"","stop":false,"contributors":[],"val_depart":0.0,"val_actuel":2.0,"val_revise":3.0,"val_cible":3.0,"unite":"oui/non","taux":100.0,"taux_land":100.0},{"id":"9.4.9","parent":"9.4","title":"Créer 2 outils de reporting pour les KPIs (Newsletters et Réseaux Sociaux) & suivi budget","poids":10.0,"owner":"Guillemette","priorite":"","stop":false,"contributors":[],"val_depart":0.0,"val_actuel":0.3,"val_revise":1.0,"val_cible":1.0,"unite":"%","taux":30.0,"taux_land":100},{"id":"9.5.1","parent":"9.5","title":"Faire un diagnostic et un audit du site via IA","poids":15.0,"owner":"Juliette","priorite":"","stop":false,"contributors":["Guillemette"],"val_depart":0.0,"val_actuel":1.0,"val_revise":1.0,"val_cible":1.0,"unite":"%","taux":100,"taux_land":100},{"id":"9.5.2","parent":"9.5","title":"Repenser la structure selon les reco de l’IA et de l’équipe marketing","poids":60.0,"owner":"Guillemette","priorite":"","stop":false,"contributors":["Juliette"],"val_depart":0.0,"val_actuel":1.0,"val_revise":1.0,"val_cible":1.0,"unite":"%","taux":100,"taux_land":100},{"id":"9.5.3","parent":"9.5","title":"Mettre en place les actions sur le site internet","poids":20.0,"owner":"Guillemette","priorite":"","stop":false,"contributors":["Juliette"],"val_depart":0.0,"val_actuel":0.8,"val_revise":1.0,"val_cible":1.0,"unite":"%","taux":80.0,"taux_land":100},{"id":"9.5.4","parent":"9.5","title":"Création de nouveaux visuels","poids":5.0,"owner":"Juliette","priorite":"","stop":false,"contributors":[],"val_depart":0.0,"val_actuel":1.0,"val_revise":1.0,"val_cible":1.0,"unite":"nb","taux":100,"taux_land":100},{"id":"9.6.1","parent":"9.6","title":"Réaliser l’inventaire complet des supports de communication et marketing Oé","poids":100.0,"owner":"Guillemette","priorite":"","stop":false,"contributors":["Julie"],"val_depart":0.0,"val_actuel":0.5,"val_revise":1.0,"val_cible":1.0,"unite":"%","taux":50.0,"taux_land":100},{"id":"10.1.1","parent":"10.1","title":"Tester la pertinence avant de lancer avec mail de préinscription","poids":20.0,"owner":"Guillemette","priorite":"","stop":false,"contributors":["Juliette"],"val_depart":0.0,"val_actuel":0.0,"val_revise":1.0,"val_cible":1.0,"unite":"oui/non","taux":0.0,"taux_land":100.0},{"id":"10.1.2","parent":"10.1","title":"Challenger le squelette et l’enrichir","poids":20.0,"owner":"Guillemette","priorite":"","stop":false,"contributors":["Juliette","Tomek"],"val_depart":0.0,"val_actuel":0.0,"val_revise":1.0,"val_cible":1.0,"unite":"%","taux":0,"taux_land":100},{"id":"10.1.3","parent":"10.1","title":"Créer du contenu et une section ressources (films, podcasts, livres)","poids":30.0,"owner":"Juliette","priorite":"","stop":false,"contributors":["Guillemette"],"val_depart":0.0,"val_actuel":0.0,"val_revise":1.0,"val_cible":1.0,"unite":"%","taux":0,"taux_land":100},{"id":"10.1.4","parent":"10.1","title":"Créer et mettre en ligne le module de formation (MOOC) pour les B2B et le \"Niveau 1\" de la communauté (vidéos par Ecofarms, partenaires, équipes & more)","poids":30.0,"owner":"Guillemette","priorite":"","stop":false,"contributors":["Juliette"],"val_depart":0.0,"val_actuel":0.0,"val_revise":1.0,"val_cible":1.0,"unite":"%","taux":0,"taux_land":100},{"id":"10.2.1","parent":"10.2","title":"Intégrer la communauté dans toutes les communications avec pour objectif de recruter","poids":40.0,"owner":"Guillemette","priorite":"","stop":false,"contributors":["Tomek"],"val_depart":0.0,"val_actuel":0.5,"val_revise":1.0,"val_cible":1.0,"unite":"%","taux":50.0,"taux_land":100},{"id":"10.2.2","parent":"10.2","title":"Lancer le système de parrainage pour accélérer l'acquisition et le business","poids":40.0,"owner":"Juliette","priorite":"","stop":false,"contributors":["Guillemette","Tomek"],"val_depart":0.0,"val_actuel":0.0,"val_revise":1.0,"val_cible":1.0,"unite":"%","taux":0,"taux_land":100},{"id":"10.2.3","parent":"10.2","title":"Concevoir et organiser 1 rencontre Oé à Paris réunissant la communauté (événement Matisse)","poids":10.0,"owner":"Juliette","priorite":"","stop":false,"contributors":["Guillemette","Tomek"],"val_depart":0.0,"val_actuel":1.0,"val_revise":1.0,"val_cible":1.0,"unite":"oui/non","taux":100.0,"taux_land":100.0},{"id":"10.2.4","parent":"10.2","title":"Concevoir et organiser 1 rencontre Oé à Lyon réunissant la communauté (soirée d'équipe)","poids":10.0,"owner":"Guillemette","priorite":"","stop":false,"contributors":["Juliette","Tomek"],"val_depart":0.0,"val_actuel":0.0,"val_revise":1.0,"val_cible":1.0,"unite":"oui/non","taux":0.0,"taux_land":100.0},{"id":"10.3.1","parent":"10.3","title":"Publier 3 posts IG et 6 stories, 3 post Linkedin et 1 NL","poids":80.0,"owner":"Juliette","priorite":"","stop":false,"contributors":["Guillemette"],"val_depart":0.0,"val_actuel":3.0,"val_revise":13.0,"val_cible":13.0,"unite":"oui/non","taux":100.0,"taux_land":100.0},{"id":"10.3.2","parent":"10.3","title":"Tenir la cadence avec la communauté : 1 relance/semaine","poids":20.0,"owner":"Guillemette","priorite":"P2","stop":false,"contributors":["Guillemette","Tomek"],"val_depart":0.0,"val_actuel":5.0,"val_revise":12.0,"val_cible":12.0,"unite":"nb","taux":41.7,"taux_land":100},{"id":"10.4.1","parent":"10.4","title":"Faire un atelier brainstorming d’équipe et chaque personne sort 5 entreprises","poids":20.0,"owner":"Juliette","priorite":"","stop":false,"contributors":[],"val_depart":0.0,"val_actuel":1.0,"val_revise":1.0,"val_cible":1.0,"unite":"oui/non","taux":100.0,"taux_land":100.0},{"id":"10.4.2","parent":"10.4","title":"Contacter par mail 50 prospects identifiés par l’équipe et les rediriger vers un commercial pour suivi","poids":50.0,"owner":"Guillemette","priorite":"","stop":false,"contributors":["Juliette"],"val_depart":0.0,"val_actuel":0.3,"val_revise":1.0,"val_cible":1.0,"unite":"%","taux":30.0,"taux_land":100},{"id":"10.4.3","parent":"10.4","title":"Créer un outil de suivis des commandes et relances commerciales","poids":30.0,"owner":"Guillemette","priorite":"","stop":false,"contributors":["Juliette"],"val_depart":0.0,"val_actuel":1.0,"val_revise":1.0,"val_cible":1.0,"unite":"%","taux":100,"taux_land":100},{"id":"11.1.1","parent":"11.1","title":"Maintien des listings avec Savannah (GA) et planification d’une nouvelle commande de 3K€ minimum","poids":25.0,"owner":"Claire","priorite":"","stop":false,"contributors":[],"val_depart":0.0,"val_actuel":0.0,"val_revise":3000.0,"val_cible":3000.0,"unite":"€","taux":0,"taux_land":100},{"id":"11.1.2","parent":"11.1","title":"Anticiper la suite avec Communal Brands: avoir pris contact avec un embouteilleur loca","poids":25.0,"owner":"Claire","priorite":"","stop":false,"contributors":[],"val_depart":0.0,"val_actuel":0.0,"val_revise":90.0,"val_cible":90.0,"unite":"nb","taux":0,"taux_land":100},{"id":"11.1.3","parent":"11.1","title":"Mise en place d'un “challenge commercial” avec les équipes de Communal","poids":25.0,"owner":"Claire","priorite":"","stop":false,"contributors":[],"val_depart":0.0,"val_actuel":4.0,"val_revise":5.0,"val_cible":5.0,"unite":"nb","taux":80.0,"taux_land":100},{"id":"11.1.4","parent":"11.1","title":"Obtenir un échange avec un acheteur de Total Wines","poids":25.0,"owner":"Claire","priorite":"","stop":false,"contributors":[],"val_depart":0.0,"val_actuel":0.0,"val_revise":4000.0,"val_cible":4000.0,"unite":"€","taux":0,"taux_land":100},{"id":"11.2.1","parent":"11.2","title":"Analyser la période d'essai avec notre distributeur","poids":33.3,"owner":"Claire","priorite":"","stop":false,"contributors":[],"val_depart":0.0,"val_actuel":0.0,"val_revise":5.0,"val_cible":5.0,"unite":"nb","taux":0,"taux_land":100},{"id":"11.2.2","parent":"11.2","title":"Convenir d’une visite marché pour cette saison ou la saison prochaine","poids":33.3,"owner":"Claire","priorite":"","stop":false,"contributors":[],"val_depart":0.0,"val_actuel":0.0,"val_revise":1000.0,"val_cible":1000.0,"unite":"€","taux":0,"taux_land":100},{"id":"11.2.3","parent":"11.2","title":"S’assurer d’avoir pris contact et mis en lien tous nos clients Allemand existants avec CSM ( La Belle France, Foodhub, Korks, Frachtgold, Tishdame, Weinpiraten)","poids":33.3,"owner":"Claire","priorite":"","stop":false,"contributors":[],"val_depart":0.0,"val_actuel":0.0,"val_revise":2.0,"val_cible":2.0,"unite":"nb","taux":0,"taux_land":100},{"id":"11.3.1","parent":"11.3","title":"Suivi des ventes et de la distribution avec CLF - avoir obtenu a minima une nouvelle commande d’ici la fin de la saison","poids":50.0,"owner":"Claire","priorite":"","stop":false,"contributors":[],"val_depart":0.0,"val_actuel":1.0,"val_revise":1.0,"val_cible":1.0,"unite":"oui/non","taux":100.0,"taux_land":100.0},{"id":"11.3.2","parent":"11.3","title":"Définir le plan promotionnel de l’année avec CLF","poids":50.0,"owner":"Claire","priorite":"","stop":false,"contributors":[],"val_depart":0.0,"val_actuel":0.0,"val_revise":1.0,"val_cible":1.0,"unite":"oui/non","taux":0.0,"taux_land":100.0},{"id":"11.4.1","parent":"11.4","title":"Ouverture de 3 nouveaux clients directs ou indirects pour un total CA minimum de 1500€","poids":20.0,"owner":"Louis","priorite":"","stop":false,"contributors":[],"val_depart":0.0,"val_actuel":0.0,"val_revise":3.0,"val_cible":3.0,"unite":"nb","taux":0,"taux_land":100},{"id":"11.4.2","parent":"11.4","title":"25 appels de prospection par semaine","poids":20.0,"owner":"Louis","priorite":"","stop":false,"contributors":[],"val_depart":0.0,"val_actuel":93.0,"val_revise":325.0,"val_cible":325.0,"unite":"nb","taux":28.6,"taux_land":100},{"id":"11.4.3","parent":"11.4","title":"Obtenir 3 vidéos meetings de présentation de la marque auprès d'acheteurs","poids":20.0,"owner":"Louis","priorite":"","stop":false,"contributors":[],"val_depart":0.0,"val_actuel":1.0,"val_revise":3.0,"val_cible":3.0,"unite":"nb","taux":33.3,"taux_land":100},{"id":"11.4.4","parent":"11.4","title":"Générer 4 dégustations avec envoi d’échantillons auprès de prospects","poids":20.0,"owner":"Louis","priorite":"","stop":false,"contributors":[],"val_depart":0.0,"val_actuel":1.0,"val_revise":4.0,"val_cible":4.0,"unite":"nb","taux":25.0,"taux_land":100},{"id":"11.4.5","parent":"11.4","title":"Obtention d’un premier client NL avec une commande supérieure à 500€","poids":20.0,"owner":"Louis","priorite":"","stop":false,"contributors":[],"val_depart":0.0,"val_actuel":0.0,"val_revise":500.0,"val_cible":500.0,"unite":"€","taux":0,"taux_land":100},{"id":"11.5.1","parent":"11.5","title":"Avoir recontacté tous les leads CHR générés par les précédentes campagnes (9) pour identifier si intérêt de dégustation","poids":50.0,"owner":"Louis","priorite":"","stop":false,"contributors":[],"val_depart":0.0,"val_actuel":7.0,"val_revise":9.0,"val_cible":9.0,"unite":"nb","taux":77.8,"taux_land":100},{"id":"11.5.2","parent":"11.5","title":"Confirmer l’intérêt de Local Spirits et sinon trouver un distributeur CHR alternatif","poids":50.0,"owner":"Claire","priorite":"","stop":false,"contributors":["Louis"],"val_depart":0.0,"val_actuel":0.0,"val_revise":1.0,"val_cible":1.0,"unite":"%","taux":0,"taux_land":100},{"id":"11.6.1","parent":"11.6","title":"Automatiser avec l'aide de l'IA tous les fichiers d'appels d'offre afin de gagner en efficacité","poids":50.0,"owner":"Claire","priorite":"","stop":false,"contributors":["Louis","Fx"],"val_depart":0.0,"val_actuel":0.5,"val_revise":1.0,"val_cible":1.0,"unite":"%","taux":50.0,"taux_land":100},{"id":"11.6.2","parent":"11.6","title":"Trouver une alternative pour un nouvel importateur / agent pour la Suède et le Canada (LCBO) 0/2","poids":50.0,"owner":"Claire","priorite":"","stop":false,"contributors":[],"val_depart":0.0,"val_actuel":1.0,"val_revise":2.0,"val_cible":2.0,"unite":"nb","taux":50.0,"taux_land":100},{"id":"11.7.1","parent":"11.7","title":"Plan export 2026/2027 rédigé dans Notion","poids":33.3,"owner":"Claire","priorite":"","stop":false,"contributors":[],"val_depart":0.0,"val_actuel":0.4,"val_revise":1.0,"val_cible":1.0,"unite":"%","taux":40.0,"taux_land":100},{"id":"11.7.2","parent":"11.7","title":"Avoir réatribués les comptes clients à l'équipe avant fin Juin","poids":33.3,"owner":"Claire","priorite":"","stop":false,"contributors":["Tomek","Christelle"],"val_depart":0.0,"val_actuel":0.0,"val_revise":1.0,"val_cible":1.0,"unite":"%","taux":0,"taux_land":100},{"id":"11.7.3","parent":"11.7","title":"Trouver le/la personne qui pourra assurer le back-up durant mon absence","poids":33.3,"owner":"Claire","priorite":"","stop":false,"contributors":[],"val_depart":0.0,"val_actuel":0.0,"val_revise":1.0,"val_cible":1.0,"unite":"oui/non","taux":0.0,"taux_land":100.0},{"id":"11.8.1","parent":"11.8","title":"Obtention de 2 nouvelles commandes via les clients Monarq objectif 6K€","poids":50.0,"owner":"Claire","priorite":"","stop":false,"contributors":[],"val_depart":0.0,"val_actuel":2700.0,"val_revise":6000.0,"val_cible":6000.0,"unite":"€","taux":45.0,"taux_land":100},{"id":"11.8.2","parent":"11.8","title":"S’assurer la dégustation de nos vins par les acheteurs de Carrefour durant le APAS show","poids":50.0,"owner":"Claire","priorite":"","stop":false,"contributors":[],"val_depart":0.0,"val_actuel":0.2,"val_revise":1.0,"val_cible":1.0,"unite":"%","taux":20.0,"taux_land":100},{"id":"11.9.1","parent":"11.9","title":"Engendrer un échange en visio avec CRF et Delhaize en vue d’un référencement","poids":33.3,"owner":"Claire","priorite":"","stop":false,"contributors":[],"val_depart":0.0,"val_actuel":1.0,"val_revise":2.0,"val_cible":2.0,"unite":"nb","taux":50.0,"taux_land":100},{"id":"11.9.2","parent":"11.9","title":"Suivi des leads générés par la campagne growth ( Le temps des Cerises, Epicerie Cabane)","poids":33.3,"owner":"Claire","priorite":"","stop":false,"contributors":[],"val_depart":0.0,"val_actuel":2.0,"val_revise":2.0,"val_cible":2.0,"unite":"nb","taux":100,"taux_land":100},{"id":"11.9.3","parent":"11.9","title":"S’assurer d’avoir mis en lien tous nos clients Benelux avec Foodprint (Traiteur Michel, Le BonWagon)","poids":33.3,"owner":"Claire","priorite":"","stop":false,"contributors":["Louis"],"val_depart":1.0,"val_actuel":2.0,"val_revise":2.0,"val_cible":2.0,"unite":"nb","taux":100,"taux_land":100},{"id":"11.10.1","parent":"11.10","title":"Confirmer notre présence au salon CHR de septembre avec Brukett","poids":50.0,"owner":"Claire","priorite":"","stop":false,"contributors":["Tomek"],"val_depart":0.0,"val_actuel":0.0,"val_revise":1.0,"val_cible":1.0,"unite":"oui/non","taux":0.0,"taux_land":100.0},{"id":"11.10.2","parent":"11.10","title":"Avancer sur le projet des Essences avec validation de la dégustation et chiffrage","poids":50.0,"owner":"Claire","priorite":"","stop":false,"contributors":["Fx"],"val_depart":0.0,"val_actuel":0.0,"val_revise":100.0,"val_cible":100.0,"unite":"%","taux":0,"taux_land":100}]};
+const PEOPLE=INITIAL_DATA.people;
+const PERSON_INITIALS={Christelle:'CH',Claire:'CL',Fiona:'FI',Fx:'FX',Guillemette:'GU',Julie:'JU',Juliette:'JT',Louis:'LO',Maxime:'MA',Thomas:'TH',Tomek:'TO'};
+const COLORS=['c0','c1','c2','c3','c4','c5','c6','c7','c8','c9','c10'];
+const OBJ_PALETTE=['#dbeafe','#dcfce7','#fce7f3','#fef3c7','#ede9fe','#ffedd5','#e0f2fe','#f0fdf4','#fdf4ff','#fff7ed','#ecfdf5'];
+const OBJ_TEXT=['#1e40af','#166534','#9d174d','#92400e','#5b21b6','#9a3412','#075985','#14532d','#701a75','#7c2d12','#064e3b'];
+function personColor(n){return COLORS[PEOPLE.indexOf(n)%COLORS.length]||'c0'}
+function objStyle(i){return`background:${OBJ_PALETTE[i%11]};color:${OBJ_TEXT[i%11]}`}
+function objDotColor(i){return OBJ_PALETTE[i%11]}
+
+let state={objectives:[],subobjectives:[],keyresults:[],season:'',collapsed_obj:{},collapsed_sobj:{},filter_person:''};
+let modalData={};
+const STORAGE_KEY='okr_oe_v2';
+
+async function loadData(){
+  try{
+    const r=await window.storage.get(STORAGE_KEY);
+    if(r&&r.value){
+      const s=JSON.parse(r.value);
+      state.objectives=s.objectives||INITIAL_DATA.objectives;
+      state.subobjectives=s.subobjectives||INITIAL_DATA.subobjectives;
+      state.keyresults=s.keyresults||INITIAL_DATA.keyresults;
+      state.season=s.season||INITIAL_DATA.season;
+      state.collapsed_obj=s.collapsed_obj||{};
+      state.collapsed_sobj=s.collapsed_sobj||{};
+    } else {
+      state.objectives=JSON.parse(JSON.stringify(INITIAL_DATA.objectives));
+      state.subobjectives=JSON.parse(JSON.stringify(INITIAL_DATA.subobjectives));
+      state.keyresults=JSON.parse(JSON.stringify(INITIAL_DATA.keyresults));
+      state.season=INITIAL_DATA.season;
+    }
+  }catch(e){
+    state.objectives=JSON.parse(JSON.stringify(INITIAL_DATA.objectives));
+    state.subobjectives=JSON.parse(JSON.stringify(INITIAL_DATA.subobjectives));
+    state.keyresults=JSON.parse(JSON.stringify(INITIAL_DATA.keyresults));
+    state.season=INITIAL_DATA.season;
+  }
+  renderAll();
+}
+
+async function saveData(){
+  try{
+    const p={objectives:state.objectives,subobjectives:state.subobjectives,keyresults:state.keyresults,season:state.season,collapsed_obj:state.collapsed_obj,collapsed_sobj:state.collapsed_sobj};
+    await window.storage.set(STORAGE_KEY,JSON.stringify(p));
+    showToast();
+  }catch(e){console.warn('save failed',e)}
+}
+
+function showToast(){const t=document.getElementById('saved-toast');t.classList.add('show');setTimeout(()=>t.classList.remove('show'),1800)}
+
+function calcSobjProg(id){
+  const krs=state.keyresults.filter(k=>k.parent===id&&!k.stop);
+  if(!krs.length){const s=state.subobjectives.find(s=>s.id===id);return s?s.taux||0:0}
+  const tw=krs.reduce((s,k)=>s+k.poids,0);
+  if(!tw)return 0;
+  return krs.reduce((s,k)=>s+(k.taux*k.poids),0)/tw;
+}
+function calcSobjLand(id){
+  const krs=state.keyresults.filter(k=>k.parent===id&&!k.stop);
+  if(!krs.length){const s=state.subobjectives.find(s=>s.id===id);return s?s.taux_land||0:0}
+  const tw=krs.reduce((s,k)=>s+k.poids,0);
+  if(!tw)return 0;
+  return krs.reduce((s,k)=>s+(k.taux_land*k.poids),0)/tw;
+}
+function calcObjProg(id){
+  const ss=state.subobjectives.filter(s=>s.parent===id);
+  if(!ss.length){const o=state.objectives.find(o=>o.id===id);return o?o.taux||0:0}
+  const tw=ss.reduce((s,o)=>s+o.poids,0);
+  if(!tw)return 0;
+  return ss.reduce((s,o)=>s+(calcSobjProg(o.id)*o.poids),0)/tw;
+}
+
+function applyFilter(){state.filter_person=document.getElementById('filter-person').value;renderAll()}
+
+function isObjVisible(oid){
+  if(!state.filter_person)return true;
+  const fp=state.filter_person;
+  const obj=state.objectives.find(o=>o.id===oid);
+  if(obj&&(obj.owner===fp||obj.contributors.includes(fp)))return true;
+  for(const s of state.subobjectives.filter(s=>s.parent===oid)){
+    if(s.owner===fp||s.contributors.includes(fp))return true;
+    if(state.keyresults.filter(k=>k.parent===s.id).some(k=>k.owner===fp||k.contributors.includes(fp)))return true;
+  }
+  return false;
+}
+
+function avatarHtml(n,sm=''){
+  if(!n)return'';
+  const cl=personColor(n);
+  const ini=(PERSON_INITIALS[n]||n.substring(0,2)).toUpperCase();
+  return`<div class="avatar ${cl}${sm?' avatar-sm':''}" title="${n}">${ini}</div>`;
+}
+function avatarsRowHtml(owner,contribs){
+  const all=[owner,...(contribs||[]).filter(c=>c&&c!==owner)];
+  return`<div class="avatars-row">${all.map(p=>avatarHtml(p)).join('')}</div>`;
+}
+
+function pColor(p){return p>=80?'#2d6a4f':p>=50?'#b5680f':'#c0392b'}
+
+function renderAll(){
+  document.getElementById('season-label').textContent=state.season;
+  renderStats();renderObjectives();populateFilter();
+}
+
+function renderStats(){
+  const n=state.objectives.length;
+  const avg=state.objectives.reduce((s,o)=>s+calcObjProg(o.id),0)/Math.max(n,1);
+  const krs=state.keyresults.filter(k=>!k.stop);
+  const done=krs.filter(k=>k.taux>=100).length;
+  const etp=state.objectives.reduce((s,o)=>s+o.etp,0);
+  document.getElementById('stats-bar').innerHTML=`
+    <div class="stat-card"><div class="stat-label">Avancement global</div><div class="stat-val">${Math.round(avg)}%</div><div class="stat-sub">${n} objectifs</div></div>
+    <div class="stat-card"><div class="stat-label">KR complétés</div><div class="stat-val">${done}/${krs.length}</div><div class="stat-sub">${Math.round(done/Math.max(krs.length,1)*100)}% accomplis</div></div>
+    <div class="stat-card"><div class="stat-label">Capacité mobilisée</div><div class="stat-val">${etp.toFixed(1)}</div><div class="stat-sub">ETP dédiés</div></div>
+    <div class="stat-card"><div class="stat-label">Équipe</div><div class="stat-val">${PEOPLE.length}</div><div class="stat-sub">contributeurs</div></div>`;
+}
+
+function populateFilter(){
+  const sel=document.getElementById('filter-person');
+  const cur=sel.value;
+  sel.innerHTML='<option value="">Toute l'équipe</option>';
+  PEOPLE.forEach(p=>{const o=document.createElement('option');o.value=p;o.textContent=p;if(p===cur)o.selected=true;sel.appendChild(o)});
+}
+
+function renderObjectives(){
+  const c=document.getElementById('objectives-list');
+  let h='';
+  state.objectives.forEach((obj,idx)=>{
+    if(!isObjVisible(obj.id))return;
+    const prog=calcObjProg(obj.id);
+    const open=!state.collapsed_obj[obj.id];
+    const sobjs=state.subobjectives.filter(s=>s.parent===obj.id);
+    const sobjsV=state.filter_person?sobjs.filter(s=>{
+      if(s.owner===state.filter_person||s.contributors.includes(state.filter_person))return true;
+      return state.keyresults.filter(k=>k.parent===s.id).some(k=>k.owner===state.filter_person||k.contributors.includes(state.filter_person));
+    }):sobjs;
+    h+=`<div class="obj-card">
+      <div class="obj-header" onclick="toggleObj('${obj.id}')">
+        <div class="obj-num" style="${objStyle(idx)}">${obj.id}</div>
+        <div class="obj-title">${obj.title}</div>
+        <div class="obj-meta">
+          ${obj.owner?`<span class="owner-tag">${avatarHtml(obj.owner,true)} ${obj.owner}</span>`:''}
+          ${obj.etp?`<span class="etp-badge">${obj.etp} ETP</span>`:''}
+          <div class="progress-wrap">
+            <div class="progress-track"><div class="progress-fill" style="width:${Math.min(prog,100)}%;background:${pColor(prog)}"></div></div>
+            <span class="progress-pct" style="color:${pColor(prog)}">${Math.round(prog)}%</span>
+          </div>
+          <button class="btn-edit" onclick="event.stopPropagation();editObj('${obj.id}')" title="Modifier"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
+          <span class="chevron ${open?'open':''}">▾</span>
+        </div>
+      </div>
+      ${open?`<div class="sobj-list">${sobjsV.map(s=>renderSobj(s,idx)).join('')}<button class="btn-add-sobj" onclick="openSobjModal('${obj.id}')">+ Ajouter un sous-objectif</button></div>`:''}
+    </div>`;
+  });
+  c.innerHTML=h||'<div class="empty-state">Aucun objectif trouvé.</div>';
+}
+
+function renderSobj(sobj,objIdx){
+  const prog=calcSobjProg(sobj.id);
+  const open=!state.collapsed_sobj[sobj.id];
+  const krs=state.keyresults.filter(k=>k.parent===sobj.id);
+  const krsV=state.filter_person?krs.filter(k=>k.owner===state.filter_person||k.contributors.includes(state.filter_person)):krs;
+  const dotColor=OBJ_PALETTE[objIdx%11];
+  return`<div class="sobj-item">
+    <div class="sobj-header" onclick="toggleSobj('${sobj.id}')">
+      <div class="sobj-dot" style="background:${dotColor}"></div>
+      <div class="sobj-title">${sobj.title}</div>
+      <div class="sobj-meta">
+        <span class="weight-badge">${sobj.poids}%</span>
+        ${sobj.owner?`<span class="owner-tag" style="font-size:11px">${avatarHtml(sobj.owner,true)} ${sobj.owner}</span>`:''}
+        <div class="sobj-progress">
+          <div class="sobj-track"><div class="sobj-fill" style="width:${Math.min(prog,100)}%;background:${pColor(prog)}"></div></div>
+          <span class="sobj-pct" style="color:${pColor(prog)}">${Math.round(prog)}%</span>
+        </div>
+        <button class="btn-edit" onclick="event.stopPropagation();editSobj('${sobj.id}')" title="Modifier"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
+        <span class="chevron ${open?'open':''}">▾</span>
+      </div>
+    </div>
+    ${open?renderKRTable(krsV,sobj.id):''}
+  </div>`;
+}
+
+function fmtVal(v,u){
+  if(u==='oui/non')return v>=1?'<span class="bool-yes">Oui ✓</span>':'<span class="bool-no">Non</span>';
+  if(u==='€')return v>=1000?(v/1000).toFixed(1)+'k€':v+'€';
+  if(u==='%'){if(v<=1&&v>0)return Math.round(v*100)+'%';return Math.round(v)+'%'}
+  return v%1===0?v:v.toFixed(1);
+}
+
+function renderKRTable(krs,sobjId){
+  const active=krs.filter(k=>k.title);
+  return`<div class="kr-section"><table class="kr-table">
+    <thead><tr><th style="width:28%">Key Result</th><th>Propriétaire / Contributeurs</th><th>Poids</th><th>Départ</th><th>Actuel</th><th>Cible révisée</th><th>Cible initiale</th><th>Avancement</th><th></th></tr></thead>
+    <tbody>
+      ${active.map(kr=>{
+        const prog=kr.taux;
+        const ut=kr.unite!=='oui/non'?`<span class="unit-tag">${kr.unite}</span>`:'';
+        let rClass='val-revised-same';
+        if(kr.val_revise<kr.val_cible)rClass='val-revised-down';
+        else if(kr.val_revise>kr.val_cible)rClass='val-revised-up';
+        const revisedHtml=kr.unite==='oui/non'?'—':`<span class="${rClass}">${fmtVal(kr.val_revise,kr.unite)}</span>`;
+        return`<tr class="${kr.stop?'kr-row-stop':''}">
+          <td class="kr-name-cell"><div class="kr-id">${kr.id}</div><div class="kr-name-text">${kr.title}</div>${kr.stop?'<span class="stop-badge">STOP</span>':''}</td>
+          <td>${avatarsRowHtml(kr.owner,kr.contributors)}</td>
+          <td class="val-cell"><span class="weight-badge">${kr.poids}%</span></td>
+          <td class="val-cell"><span class="val-start">${fmtVal(kr.val_depart,kr.unite)}</span>${ut}</td>
+          <td class="val-cell"><span class="val-current">${fmtVal(kr.val_actuel,kr.unite)}</span></td>
+          <td class="val-cell">${revisedHtml}</td>
+          <td class="val-cell"><span class="val-target">${fmtVal(kr.val_cible,kr.unite)}</span></td>
+          <td><div class="mini-prog"><div class="mini-track"><div class="mini-fill" style="width:${Math.min(prog,100)}%;background:${pColor(prog)}"></div></div><span class="mini-pct" style="color:${pColor(prog)}">${Math.round(prog)}%</span></div></td>
+          <td><button class="btn-edit" onclick="editKR('${kr.id}')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button></td>
+        </tr>`;
+      }).join('')}
+      <tr class="add-kr-row"><td colspan="9"><button class="btn-add-kr" onclick="openKRModal('${sobjId}')">+ Ajouter un KR</button></td></tr>
+    </tbody>
+  </table></div>`;
+}
+
+function toggleObj(id){state.collapsed_obj[id]=!state.collapsed_obj[id];saveData();renderObjectives()}
+function toggleSobj(id){state.collapsed_sobj[id]=!state.collapsed_sobj[id];saveData();renderObjectives()}
+
+function krFormHtml(kr){
+  const ct=kr.contributors||[];
+  return`<div class="form-field"><label class="form-label">Titre du KR</label><input class="form-input" id="f-title" type="text" value="${(kr.title||'').replace(/"/g,'&quot;')}" placeholder="Action mesurable"></div>
+    <div class="form-row">
+      <div class="form-field"><label class="form-label">Propriétaire</label>
+        <select class="form-input" id="f-owner" onchange="syncOwner()"><option value="">—</option>${PEOPLE.map(p=>`<option value="${p}" ${kr.owner===p?'selected':''}>${p}</option>`).join('')}</select>
+      </div>
+      <div class="form-field"><label class="form-label">Poids (%)</label><input class="form-input" id="f-poids" type="number" step="5" min="0" max="100" value="${kr.poids||10}"></div>
+    </div>
+    <div class="form-field"><label class="form-label">Contributeurs</label>
+      <div class="checkbox-group" id="contrib-grp">${PEOPLE.map(p=>`<label class="checkbox-item"><input type="checkbox" name="cb" value="${p}" ${ct.includes(p)||p===kr.owner?'checked':''}> ${p}</label>`).join('')}</div>
+    </div>
+    <div class="form-field"><label class="form-label">Unité</label>
+      <select class="form-input" id="f-unite">${['%','nb','€','oui/non'].map(u=>`<option value="${u}" ${kr.unite===u?'selected':''}>${u}</option>`).join('')}</select>
+    </div>
+    <div class="form-row-3">
+      <div class="form-field"><label class="form-label">Valeur départ</label><input class="form-input" id="f-depart" type="number" step="any" value="${kr.val_depart||0}"></div>
+      <div class="form-field"><label class="form-label">Valeur actuelle</label><input class="form-input" id="f-actuel" type="number" step="any" value="${kr.val_actuel||0}"></div>
+      <div class="form-field"><label class="form-label">Cible initiale</label><input class="form-input" id="f-cible" type="number" step="any" value="${kr.val_cible||1}"></div>
+    </div>
+    <div class="form-field"><label class="form-label">Cible réévaluée <span style="color:var(--text3);font-weight:400">(prévision fin de saison)</span></label><input class="form-input" id="f-revise" type="number" step="any" value="${kr.val_revise||kr.val_cible||1}"></div>
+    <div class="form-field"><label class="checkbox-item" style="gap:8px"><input type="checkbox" id="f-stop" ${kr.stop?'checked':''}> Marquer STOP (KR abandonné)</label></div>
+    <p class="notice">Avancement = (actuel − départ) ÷ (cible − départ) × 100</p>`;
+}
+
+function syncOwner(){
+  const o=document.getElementById('f-owner').value;
+  if(o)document.querySelectorAll('#contrib-grp input').forEach(b=>{if(b.value===o)b.checked=true});
+}
+
+function calcTaux(dep,act,cib,u){
+  if(u==='oui/non')return act>=1?100:0;
+  const span=cib-dep;
+  if(!span)return act>=cib?100:0;
+  return Math.max(0,Math.min(100,(act-dep)/span*100));
+}
+
+function openObjModal(){
+  modalData={type:'obj',id:null};
+  document.getElementById('modal-title').textContent='Nouvel objectif';
+  document.getElementById('btn-delete').style.display='none';
+  document.getElementById('modal-body').innerHTML=`
+    <div class="form-field"><label class="form-label">Titre</label><input class="form-input" id="f-title" type="text"></div>
+    <div class="form-row">
+      <div class="form-field"><label class="form-label">Propriétaire</label><select class="form-input" id="f-owner"><option value="">—</option>${PEOPLE.map(p=>`<option>${p}</option>`).join('')}</select></div>
+      <div class="form-field"><label class="form-label">ETP</label><input class="form-input" id="f-etp" type="number" step="0.05" min="0" value="0.1"></div>
+    </div>
+    <div class="form-field"><label class="form-label">Priorité</label>
+      <select class="form-input" id="f-priorite">${['P1','P2','P3'].map(p=>`<option value="${p}">${p}</option>`).join('')}</select>
+    </div>`;
+  document.getElementById('modal-overlay').classList.add('show');
+}
+
+function editObj(id){
+  const obj=state.objectives.find(o=>o.id===id);if(!obj)return;
+  modalData={type:'obj',id};
+  document.getElementById('modal-title').textContent="Modifier l'objectif";
+  document.getElementById('btn-delete').style.display='block';
+  document.getElementById('modal-body').innerHTML=`
+    <div class="form-field"><label class="form-label">Titre</label><input class="form-input" id="f-title" type="text" value="${obj.title.replace(/"/g,'&quot;')}"></div>
+    <div class="form-row">
+      <div class="form-field"><label class="form-label">Propriétaire</label><select class="form-input" id="f-owner"><option value="">—</option>${PEOPLE.map(p=>`<option ${obj.owner===p?'selected':''}>${p}</option>`).join('')}</select></div>
+      <div class="form-field"><label class="form-label">ETP</label><input class="form-input" id="f-etp" type="number" step="0.05" min="0" value="${obj.etp}"></div>
+    </div>
+    <div class="form-field"><label class="form-label">Priorité</label>
+      <select class="form-input" id="f-priorite">${['P1','P2','P3'].map(p=>`<option value="${p}" ${obj.priorite===p?'selected':''}>${p}</option>`).join('')}</select>
+    </div>`;
+  document.getElementById('modal-overlay').classList.add('show');
+}
+
+function openSobjModal(parentId){
+  modalData={type:'sobj',id:null,parent:parentId};
+  document.getElementById('modal-title').textContent='Nouveau sous-objectif';
+  document.getElementById('btn-delete').style.display='none';
+  document.getElementById('modal-body').innerHTML=`
+    <div class="form-field"><label class="form-label">Titre</label><input class="form-input" id="f-title" type="text"></div>
+    <div class="form-row">
+      <div class="form-field"><label class="form-label">Propriétaire</label><select class="form-input" id="f-owner"><option value="">—</option>${PEOPLE.map(p=>`<option>${p}</option>`).join('')}</select></div>
+      <div class="form-field"><label class="form-label">Poids (%)</label><input class="form-input" id="f-poids" type="number" step="5" min="0" max="100" value="20"></div>
+    </div>`;
+  document.getElementById('modal-overlay').classList.add('show');
+}
+
+function editSobj(id){
+  const s=state.subobjectives.find(s=>s.id===id);if(!s)return;
+  modalData={type:'sobj',id};
+  document.getElementById('modal-title').textContent='Modifier le sous-objectif';
+  document.getElementById('btn-delete').style.display='block';
+  document.getElementById('modal-body').innerHTML=`
+    <div class="form-field"><label class="form-label">Titre</label><input class="form-input" id="f-title" type="text" value="${s.title.replace(/"/g,'&quot;')}"></div>
+    <div class="form-row">
+      <div class="form-field"><label class="form-label">Propriétaire</label><select class="form-input" id="f-owner"><option value="">—</option>${PEOPLE.map(p=>`<option ${s.owner===p?'selected':''}>${p}</option>`).join('')}</select></div>
+      <div class="form-field"><label class="form-label">Poids (%)</label><input class="form-input" id="f-poids" type="number" step="5" min="0" max="100" value="${s.poids}"></div>
+    </div>`;
+  document.getElementById('modal-overlay').classList.add('show');
+}
+
+function openKRModal(sobjId){
+  modalData={type:'kr',id:null,parent:sobjId};
+  document.getElementById('modal-title').textContent='Nouveau KR';
+  document.getElementById('btn-delete').style.display='none';
+  document.getElementById('modal-body').innerHTML=krFormHtml({title:'',owner:'',contributors:[],poids:10,unite:'%',val_depart:0,val_actuel:0,val_revise:1,val_cible:1,stop:false});
+  document.getElementById('modal-overlay').classList.add('show');
+}
+
+function editKR(id){
+  const kr=state.keyresults.find(k=>k.id===id);if(!kr)return;
+  modalData={type:'kr',id};
+  document.getElementById('modal-title').textContent='Mettre à jour le KR';
+  document.getElementById('btn-delete').style.display='block';
+  document.getElementById('modal-body').innerHTML=krFormHtml(kr);
+  document.getElementById('modal-overlay').classList.add('show');
+}
+
+function saveModal(){
+  const{type,id,parent}=modalData;
+  const getV=i=>document.getElementById(i)?.value;
+  const getF=i=>parseFloat(document.getElementById(i)?.value)||0;
+  if(type==='obj'){
+    const title=getV('f-title').trim();if(!title)return;
+    const d={title,owner:getV('f-owner'),etp:getF('f-etp'),priorite:getV('f-priorite'),contributors:[]};
+    if(id){Object.assign(state.objectives.find(o=>o.id===id),d)}
+    else{const nid=String(state.objectives.length+1);state.objectives.push({id:nid,...d,taux:0,taux_land:0})}
+  } else if(type==='sobj'){
+    const title=getV('f-title').trim();if(!title)return;
+    const d={title,owner:getV('f-owner'),poids:getF('f-poids'),contributors:[]};
+    if(id){Object.assign(state.subobjectives.find(s=>s.id===id),d)}
+    else{const ss=state.subobjectives.filter(s=>s.parent===parent);const nid=`${parent}.${ss.length+1}`;state.subobjectives.push({id:nid,parent,...d,taux:0,taux_land:0})}
+  } else if(type==='kr'){
+    const title=getV('f-title').trim();if(!title)return;
+    const owner=getV('f-owner');
+    const unite=getV('f-unite');
+    const poids=getF('f-poids');
+    const dep=getF('f-depart'),act=getF('f-actuel'),cib=getF('f-cible'),rev=getF('f-revise');
+    const stop=document.getElementById('f-stop').checked;
+    const cbs=document.querySelectorAll('#contrib-grp input:checked');
+    const contributors=Array.from(cbs).map(b=>b.value).filter(v=>v!==owner);
+    const taux=Math.round(calcTaux(dep,act,cib,unite)*10)/10;
+    const taux_land=Math.round(calcTaux(dep,rev,cib,unite)*10)/10;
+    const d={title,owner,poids,unite,val_depart:dep,val_actuel:act,val_cible:cib,val_revise:rev,stop,contributors,taux,taux_land,priorite:stop?'STOP':''};
+    if(id){Object.assign(state.keyresults.find(k=>k.id===id),d)}
+    else{const kk=state.keyresults.filter(k=>k.parent===parent);const nid=`${parent}.${kk.length+1}`;state.keyresults.push({id:nid,parent,...d})}
+  }
+  closeModal();saveData();renderAll();
+}
+
+function deleteItem(){
+  const{type,id}=modalData;if(!id)return;
+  if(!confirm('Supprimer cet élément ?'))return;
+  if(type==='obj')state.objectives=state.objectives.filter(o=>o.id!==id);
+  else if(type==='sobj')state.subobjectives=state.subobjectives.filter(s=>s.id!==id);
+  else if(type==='kr')state.keyresults=state.keyresults.filter(k=>k.id!==id);
+  closeModal();saveData();renderAll();
+}
+
+function closeModal(e){
+  if(e&&e.target!==document.getElementById('modal-overlay'))return;
+  document.getElementById('modal-overlay').classList.remove('show');
+  modalData={};
+}
+
+loadData();
+</script>
+</body>
+</html>
